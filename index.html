@@ -117,12 +117,12 @@ body {
   z-index: 1;
 }
 
-/* ===== HEADER MODERN ===== */
+/* ===== HEADER MODERN (DIPERBAIKI) ===== */
 header {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 12px 0;
+  padding: 12px 20px; /* JARAK KIRI KANAN DITAMBAHKAN agar tidak mepet */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,26 +138,19 @@ header {
   gap: 12px;
 }
 
-.logo-wrapper {
-  position: relative;
-}
+.logo-wrapper { position: relative; }
 .logo {
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
   border-radius: var(--radius-md);
-  display: grid;
-  place-items: center;
+  display: grid; place-items: center;
   font-size: 18px;
   background: var(--gradient-primary);
   box-shadow: var(--shadow-glow);
   transition: var(--transition);
 }
-.logo-wrapper:hover .logo {
-  transform: scale(1.05) rotate(-5deg);
-}
+.logo-wrapper:hover .logo { transform: scale(1.05) rotate(-5deg); }
 .logo-pulse {
-  position: absolute;
-  inset: -4px;
+  position: absolute; inset: -4px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(109,124,255,0.2);
   animation: pulseRing 2s ease-in-out infinite;
@@ -168,41 +161,27 @@ header {
 }
 
 .brand-text h1 {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
   background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .brand-text p {
-  font-size: 10px;
-  color: var(--text-muted);
-  margin-top: -2px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
+  font-size: 10px; color: var(--text-muted); margin-top: -2px; font-weight: 500; letter-spacing: 0.3px;
 }
 .brand-text .pro-badge {
-  font-size: 8px;
-  font-weight: 700;
-  background: var(--gradient-premium);
-  color: #fff;
-  padding: 1px 8px;
-  border-radius: var(--radius-full);
-  margin-left: 6px;
-  -webkit-text-fill-color: #fff;
-  display: inline-block;
-  vertical-align: middle;
+  font-size: 8px; font-weight: 700; background: var(--gradient-premium); color: #fff;
+  padding: 1px 8px; border-radius: var(--radius-full); margin-left: 6px;
+  -webkit-text-fill-color: #fff; display: inline-block; vertical-align: middle;
 }
 
+/* ===== HEADER ACTIONS (TOMBOL KANAN ATAS) DIPERBAIKI ===== */
 .header-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px; /* JARAK ANTAR TOMBOL DITAMBAHKAN */
   align-items: center;
 }
 .icon-btn {
-  width: 36px;
+  width: 36px;  /* UKURAN TOMBOL DISAMAKAN */
   height: 36px;
   border-radius: var(--radius-md);
   background: rgba(255,255,255,0.04);
@@ -214,58 +193,13 @@ header {
   cursor: pointer;
   transition: var(--transition);
 }
+/* EFEK HOVER LEBIH ELEGAN */
 .icon-btn:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.08);
-  transform: translateY(-2px);
-  color: #fff;
-}
-
-/* ===== HERO MODERN ===== */
-.hero {
-  padding: 24px 0 16px;
-  position: relative;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 14px 4px 8px;
-  background: rgba(109,124,255,0.1);
-  border: 1px solid rgba(109,124,255,0.15);
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  color: #6d7cff;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.hero-badge .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #35d38a;
-  animation: pulseDot 2s infinite;
-}
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.5); }
-}
-
-.hero h2 {
-  font-size: 30px;
-  font-weight: 900;
-  letter-spacing: -1px;
-  line-height: 1.1;
-  background: linear-gradient(135deg, #ffffff 30%, #6d7cff 70%, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero p {
-  color: var(--text-secondary);
-  font-size: 14px;
-  margin-top: 4px;
-  font-weight: 400;
+  background: rgba(255,255,255,0.12); /* Background lebih terang saat di-hover */
+  border-color: rgba(255,255,255,0.1);
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.05); /* Sedikit membesar dan melayang */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 /* ===== POINTS CARD MODERN ===== */
