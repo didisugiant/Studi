@@ -275,6 +275,7 @@ header {
   border: 1px solid rgba(109,124,255,0.08);
   margin-bottom: 16px;
   backdrop-filter: blur(10px);
+  flex-wrap: wrap;
 }
 .points-card .points {
   font-size: 24px;
@@ -656,7 +657,8 @@ select option { background: #1a1a2e; }
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 420px;
+  max-height: 50vh;
+  min-height: 200px;
   overflow-y: auto;
   padding: 4px 4px 4px 0;
   scroll-behavior: smooth;
@@ -767,6 +769,9 @@ select option { background: #1a1a2e; }
   border-radius: var(--radius-md);
   padding: 3px;
   transition: var(--transition);
+  position: sticky;
+  bottom: 0;
+  backdrop-filter: blur(10px);
 }
 .chat-input-area:focus-within {
   border-color: rgba(109,124,255,0.2);
@@ -780,10 +785,11 @@ select option { background: #1a1a2e; }
   color: #fff;
   font-size: 13px;
   outline: none;
+  min-width: 0;
 }
 .chat-input-area input::placeholder { color: var(--text-muted); }
 .chat-input-area button {
-  padding: 9px 18px;
+  padding: 9px 14px;
   border: 0;
   border-radius: var(--radius-sm);
   background: var(--gradient-primary);
@@ -792,6 +798,8 @@ select option { background: #1a1a2e; }
   font-size: 12px;
   cursor: pointer;
   transition: var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .chat-input-area button:hover { transform: scale(1.03); }
 
@@ -806,12 +814,14 @@ select option { background: #1a1a2e; }
   background: var(--bg-primary);
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 16px;
 }
 .chat-fullscreen .chat-container {
   flex: 1;
   max-height: none;
+  min-height: 0;
   overflow-y: auto;
+  margin-bottom: 10px;
 }
 .chat-fullscreen .chat-fullscreen-header {
   display: flex;
@@ -841,6 +851,15 @@ select option { background: #1a1a2e; }
 .chat-fullscreen .chat-fullscreen-header .close-btn:hover {
   background: rgba(255,255,255,0.08);
   color: #fff;
+}
+.chat-fullscreen .chat-input-area {
+  position: sticky;
+  bottom: 0;
+  background: rgba(10,10,26,0.95);
+  backdrop-filter: blur(20px);
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .loading-dots {
@@ -1416,13 +1435,39 @@ select option { background: #1a1a2e; }
   .achievement-grid { grid-template-columns: repeat(2, 1fr); }
   .tabs { gap: 2px; }
   .tab-btn { font-size: 9px; padding: 5px 8px; }
-  .chat-bubble { max-width: 100%; }
-  .chat-avatar { width: 26px; height: 26px; font-size: 12px; }
-  .chat-text { font-size: 12px; padding: 8px 12px; }
+  .chat-bubble { max-width: 95%; }
+  .chat-avatar { width: 28px; height: 28px; font-size: 12px; }
+  .chat-text { font-size: 12px; padding: 8px 10px; }
   .card { padding: 14px 16px; }
   .points-card .points { font-size: 20px; }
   .flashcard .front, .flashcard .back { font-size: 14px; }
-  .chat-fullscreen { padding: 12px; }
+  .chat-fullscreen { padding: 10px; }
+  .chat-container {
+    max-height: 45vh;
+    min-height: 150px;
+  }
+  .chat-input-area {
+    gap: 4px;
+    padding: 2px;
+  }
+  .chat-input-area input {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .chat-input-area button {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+  .chat-fullscreen .chat-fullscreen-header {
+    padding: 8px 0;
+  }
+  .chat-fullscreen .chat-fullscreen-header h2 {
+    font-size: 14px;
+  }
+  .chat-fullscreen .close-btn {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1612,7 +1657,7 @@ select option { background: #1a1a2e; }
 <!-- ===== TAB KUIS ===== -->
 <section id="tabQuiz" class="card hidden">
  <div class="card-title">🧠 Kuis Interaktif</div>
- <div class="daily-challenge">
+ <div class="daily-challenge" id="dailyChallenge">
   <div class="challenge-icon">🔥</div>
   <div class="challenge-info">
    <div class="title">Tantangan Hari Ini</div>
@@ -2022,19 +2067,23 @@ function toggleFullscreenChat(){
   const fullscreenChat = document.getElementById('fullscreenChatContainer');
   
   if(overlay.classList.contains('hidden')){
-    // Enter fullscreen
     isFullscreenChat = true;
     fullscreenChat.innerHTML = normalChat.innerHTML;
     overlay.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    scrollChat('fullscreenChatContainer');
-    setTimeout(()=>document.getElementById('fullscreenChatInput').focus(),100);
+    setTimeout(() => {
+      scrollChat('fullscreenChatContainer');
+      document.getElementById('fullscreenChatInput').focus();
+    }, 100);
   } else {
-    // Exit fullscreen
     isFullscreenChat = false;
     overlay.classList.add('hidden');
     document.body.style.overflow = '';
     normalChat.innerHTML = fullscreenChat.innerHTML;
+    setTimeout(() => {
+      scrollChat('chatContainer');
+      document.getElementById('chatInput').focus();
+    }, 100);
   }
 }
 
@@ -2463,19 +2512,31 @@ function submitQuiz(){
       else if(idx===val&&!isCorrect)l.classList.add('wrong');
     });
   });
-  if(!allAnswered){document.getElementById('quizStatus').textContent="⚠️ Jawab semua soal!";document.getElementById('quizStatus').className="status err";return}
+  if(!allAnswered){
+    const quizStatus = document.getElementById('quizStatus');
+    if(quizStatus) {
+      quizStatus.textContent="⚠️ Jawab semua soal!";
+      quizStatus.className="status err";
+    }
+    return;
+  }
   quizAnswered=true;
   const score=Math.round((correct/total)*100);
   wrongAnswersList=wrongQuestions;
   saveWrongAnswers(wrongQuestions);
   saveQuizHistory(document.getElementById('quizTopic').value.trim(),score,total);
   const c=$('quizContainer');
+  if(!c) return;
   let stars=score===100?'⭐⭐⭐⭐⭐':score>=80?'⭐⭐⭐⭐':score>=60?'⭐⭐⭐':score>=40?'⭐⭐':'⭐';
   c.innerHTML+=`<div class="quiz-result"><div class="score-label">Nilai Kamu</div><div class="score">${score}%</div><div class="stars">${stars}</div><div class="feedback">${correct} dari ${total} soal benar</div><div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap"><button class="btn btn-success btn-sm" onclick="resetQuiz()">🔄 Kuis Baru</button><button class="btn btn-warning btn-sm" onclick="showAnswerKeys()">🔑 Kunci Jawaban</button></div></div>`;
   if(wrongQuestions.length>0){
     c.innerHTML+=`<div class="quiz-wrong-review"><strong style="color:#ff6b7a">📝 Review Jawaban Salah:</strong>${wrongQuestions.map(w=>`<div class="wrong-item"><strong>${escapeHtml(w.question)}</strong><br><span style="font-size:12px;color:var(--text-secondary)">Jawaban kamu: ${w.options[w.userAnswer]}</span><br><span class="correct-answer">✓ Jawaban benar: ${w.options[w.correct]}</span></div>`).join('')}</div>`;
   }
-  document.getElementById('quizStatus').textContent=`✅ Selesai! Nilai: ${score}%`;document.getElementById('quizStatus').className="status ok";
+  const quizStatus = document.getElementById('quizStatus');
+  if(quizStatus) {
+    quizStatus.textContent=`✅ Selesai! Nilai: ${score}%`;
+    quizStatus.className="status ok";
+  }
   updatePoints(score>=80?20:10);
   updateStreak();
   checkAchievements();
@@ -2491,9 +2552,13 @@ function showAnswerKeys(){
   });
   html+='</div>';
   const c=$('quizContainer');
+  if(!c) return;
   const old=c.querySelector('.lesson-box:last-child');
   if(old && old.textContent.includes('Kunci Jawaban')) old.remove();
-  c.querySelector('.quiz-result').insertAdjacentHTML('afterend',html);
+  const quizResult = c.querySelector('.quiz-result');
+  if(quizResult) {
+    quizResult.insertAdjacentHTML('afterend',html);
+  }
 }
 
 function resetQuiz(){
@@ -2613,10 +2678,16 @@ function updateDailyChallenge(){
   if(progress.date!==today){progress.date=today;progress.count=0}
   progress.count++;
   localStorage.setItem('dailyChallenge',JSON.stringify(progress));
-  document.getElementById('dailyProgress').textContent=progress.count+'/1';
-  if(progress.count>=1){
-    document.getElementById('dailyChallenge').style.borderColor='rgba(53,211,138,.2)';
-    document.getElementById('dailyChallenge').style.background='rgba(53,211,138,.04)';
+  
+  const dailyProgress = document.getElementById('dailyProgress');
+  if(dailyProgress) {
+    dailyProgress.textContent=progress.count+'/1';
+  }
+  
+  const dailyChallenge = document.getElementById('dailyChallenge');
+  if(dailyChallenge && progress.count>=1){
+    dailyChallenge.style.borderColor='rgba(53,211,138,.2)';
+    dailyChallenge.style.background='rgba(53,211,138,.04)';
   }
 }
 
