@@ -45,7 +45,6 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 .btn.green{background:linear-gradient(135deg,#10b981,#059669)}
 .btn.orange{background:linear-gradient(135deg,#f59e0b,#d97706)}
 .btn.red{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.btn.purple{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
 .status{text-align:center;min-height:18px;color:var(--muted);font-size:11px;margin-top:8px}
 .status.ok{color:var(--success)}.status.err{color:var(--danger)}
 .hidden{display:none!important}
@@ -164,20 +163,6 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 .chat-bubble.user .chat-meta { justify-content:flex-end; }
 .chat-bubble.ai .chat-meta { justify-content:flex-start; }
 
-.level-badge-sm {
-  display:inline-block;
-  padding:1px 8px;
-  border-radius:10px;
-  font-size:9px;
-  font-weight:700;
-}
-.level-badge-sm.sd { background:#10b981; color:#fff; }
-.level-badge-sm.smp { background:#3b82f6; color:#fff; }
-.level-badge-sm.sma { background:#f59e0b; color:#000; }
-.level-badge-sm.mahasiswa { background:#8b5cf6; color:#fff; }
-.level-badge-sm.umum { background:#6b7280; color:#fff; }
-.level-badge-sm.otomatis { background:#6d7cff; color:#fff; }
-
 .chat-actions {
   display:flex;
   gap:6px;
@@ -226,24 +211,6 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
   cursor:pointer;
 }
 .chat-input-area button:hover { transform:scale(1.03); }
-
-/* ============ LEVEL SELECTOR ============ */
-.level-selector { display:flex; gap:6px; flex-wrap:wrap; padding:4px 0; }
-.level-option { padding:6px 14px; border-radius:20px; border:2px solid var(--line); background:var(--surface3); color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; gap:4px; }
-.level-option:hover { transform:translateY(-2px); border-color:#46547a; }
-.level-option.active-sd { border-color:#10b981; background:rgba(16,185,129,.2); color:#34d399; }
-.level-option.active-smp { border-color:#3b82f6; background:rgba(59,130,246,.2); color:#60a5fa; }
-.level-option.active-sma { border-color:#f59e0b; background:rgba(245,158,11,.2); color:#fbbf24; }
-.level-option.active-mahasiswa { border-color:#8b5cf6; background:rgba(139,92,246,.2); color:#a78bfa; }
-.level-option.active-umum { border-color:#6b7280; background:rgba(107,114,128,.2); color:#9ca3af; }
-.level-option.active-otomatis { border-color:#6d7cff; background:rgba(109,124,255,.2); color:#6d7cff; }
-.level-option .dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
-.level-option .dot.sd { background:#10b981; }
-.level-option .dot.smp { background:#3b82f6; }
-.level-option .dot.sma { background:#f59e0b; }
-.level-option .dot.mahasiswa { background:#8b5cf6; }
-.level-option .dot.umum { background:#6b7280; }
-.level-option .dot.otomatis { background:#6d7cff; }
 
 /* ============ TABS ============ */
 .tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px;overflow-x:auto;flex-wrap:wrap}
@@ -390,12 +357,12 @@ body.dark-mode header{background:rgba(10,10,15,.9)}
     <option value="groq/compound">Groq Compound — web search</option>
    </select>
   </div>
-  <div>
-   <label>Mode Level</label>
-   <select id="levelMode" onchange="toggleLevelMode()">
-    <option value="otomatis">🤖 Otomatis (Deteksi AI)</option>
-    <option value="manual">✋ Manual (Pilih Sendiri)</option>
-   </select>
+  <div style="background:var(--surface3);border-radius:13px;padding:12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">
+   <span style="font-size:18px">🤖</span>
+   <div>
+    <div style="font-weight:700;color:var(--text)">Deteksi Level Otomatis</div>
+    <div style="font-size:11px">AI menyesuaikan penjelasan sesuai tingkat pemahamanmu</div>
+   </div>
   </div>
  </div>
  <div style="margin-top:10px">
@@ -427,18 +394,6 @@ body.dark-mode header{background:rgba(10,10,15,.9)}
 <!-- ============ TAB BELAJAR ============ -->
 <section id="tabLearn" class="card">
  <div class="card-title">📚 Mulai Belajar</div>
- <div style="margin-bottom:10px">
-  <label>🎯 Pilih Level</label>
-  <div class="level-selector" id="levelSelector">
-   <button class="level-option" data-level="otomatis" onclick="selectLevel('otomatis')"><span class="dot otomatis"></span> 🤖 Otomatis</button>
-   <button class="level-option" data-level="sd" onclick="selectLevel('sd')"><span class="dot sd"></span> 🟢 SD</button>
-   <button class="level-option" data-level="smp" onclick="selectLevel('smp')"><span class="dot smp"></span> 🔵 SMP</button>
-   <button class="level-option" data-level="sma" onclick="selectLevel('sma')"><span class="dot sma"></span> 🟡 SMA</button>
-   <button class="level-option" data-level="mahasiswa" onclick="selectLevel('mahasiswa')"><span class="dot mahasiswa"></span> 🟣 Mahasiswa</button>
-   <button class="level-option" data-level="umum" onclick="selectLevel('umum')"><span class="dot umum"></span> ⚪ Umum</button>
-  </div>
-  <div id="levelStatus" style="font-size:11px;color:var(--muted);margin-top:4px">🤖 Mode: Otomatis - AI akan mendeteksi level dari pertanyaan</div>
- </div>
  <label>Pelajaran / topik</label>
  <input id="topic" placeholder="Contoh: fotosintesis, integral, sejarah Indonesia...">
  <div style="margin-top:11px">
@@ -452,13 +407,12 @@ body.dark-mode header{background:rgba(10,10,15,.9)}
  <div id="status" class="status"></div>
 </section>
 
-<!-- ============ TAB HASIL BELAJAR ============ -->
-<section class="card">
+<!-- ============ TAB HASIL BELAJAR - HIDDEN DEFAULT ============ -->
+<section class="card hidden" id="resultCard">
  <div class="card-title">💡 Hasil Belajar</div>
  <div id="resultChat" class="chat-container">
   <!-- Chat akan diisi oleh JavaScript -->
  </div>
- <!-- Chat input untuk hasil belajar -->
  <div class="chat-input-area">
   <input id="resultChatInput" placeholder="Tanya lanjutan tentang materi ini..." onkeypress="if(event.key==='Enter') sendResultChat()">
   <button onclick="sendResultChat()">Kirim ➤</button>
@@ -478,16 +432,6 @@ body.dark-mode header{background:rgba(10,10,15,.9)}
 <!-- ============ TAB CHAT PRIBADI ============ -->
 <section id="tabChat" class="card hidden">
  <div class="card-title">💬 Chat dengan Tutor AI Pribadi</div>
- <div style="margin-bottom:10px">
-  <div class="level-selector" id="levelSelectorChat">
-   <button class="level-option" data-level="otomatis" onclick="selectLevelChat('otomatis')"><span class="dot otomatis"></span> 🤖 Otomatis</button>
-   <button class="level-option" data-level="sd" onclick="selectLevelChat('sd')"><span class="dot sd"></span> 🟢 SD</button>
-   <button class="level-option" data-level="smp" onclick="selectLevelChat('smp')"><span class="dot smp"></span> 🔵 SMP</button>
-   <button class="level-option" data-level="sma" onclick="selectLevelChat('sma')"><span class="dot sma"></span> 🟡 SMA</button>
-   <button class="level-option" data-level="mahasiswa" onclick="selectLevelChat('mahasiswa')"><span class="dot mahasiswa"></span> 🟣 Mahasiswa</button>
-   <button class="level-option" data-level="umum" onclick="selectLevelChat('umum')"><span class="dot umum"></span> ⚪ Umum</button>
-  </div>
- </div>
  <div class="clear-chat" style="display:flex;justify-content:flex-end;margin-bottom:8px">
   <button onclick="clearChatHistory()" style="background:transparent;border:0;color:var(--muted);font-size:11px;padding:4px 8px;border-radius:6px;cursor:pointer">🗑️ Hapus riwayat chat</button>
  </div>
@@ -504,16 +448,6 @@ body.dark-mode header{background:rgba(10,10,15,.9)}
 <!-- ============ TAB VOICE ============ -->
 <section id="tabVoice" class="card hidden">
  <div class="card-title">🎤 Ngobrol Suara dengan AI</div>
- <div style="margin-bottom:10px">
-  <div class="level-selector" id="levelSelectorVoice">
-   <button class="level-option" data-level="otomatis" onclick="selectLevelVoice('otomatis')"><span class="dot otomatis"></span> 🤖 Otomatis</button>
-   <button class="level-option" data-level="sd" onclick="selectLevelVoice('sd')"><span class="dot sd"></span> 🟢 SD</button>
-   <button class="level-option" data-level="smp" onclick="selectLevelVoice('smp')"><span class="dot smp"></span> 🔵 SMP</button>
-   <button class="level-option" data-level="sma" onclick="selectLevelVoice('sma')"><span class="dot sma"></span> 🟡 SMA</button>
-   <button class="level-option" data-level="mahasiswa" onclick="selectLevelVoice('mahasiswa')"><span class="dot mahasiswa"></span> 🟣 Mahasiswa</button>
-   <button class="level-option" data-level="umum" onclick="selectLevelVoice('umum')"><span class="dot umum"></span> ⚪ Umum</button>
-  </div>
- </div>
  <div class="voice-container">
   <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceChat()">🎙️</button>
   <div id="voiceStatus" class="voice-status">Klik tombol mikrofon untuk mulai bicara</div>
@@ -628,7 +562,6 @@ body.dark-mode header{background:rgba(10,10,15,.9)}
 // ============ KONFIGURASI & VARIABLES ============
 // ============================================================
 const KEY_STORE = "studyai_groq_key_v2";
-const LEVEL_STORE = "studyai_level_preference";
 const NOTES_STORE = "studyai_notes";
 const PROGRESS_STORE = "studyai_progress";
 const PLAN_STORE = "studyai_plan";
@@ -642,67 +575,20 @@ let quizAnswered = false;
 let isListening = false;
 let recognition = null;
 let isProcessingVoice = false;
-let currentResultTopic = ''; // Untuk menyimpan topik terakhir di hasil belajar
+let currentResultTopic = '';
 
 // ============================================================
-// ============ LEVEL CONFIG ============
+// ============ LEVEL CONFIG - OTOMATIS ============
 // ============================================================
 const LEVEL_CONFIG = {
-  'otomatis': { class: '', badge: 'otomatis', icon: '🤖', label: 'Otomatis', color: '#6d7cff', emoji: '🤖' },
-  'SD': { class: 'level-sd', badge: 'sd', icon: '🟢', label: 'SD', color: '#10b981', emoji: '🌱' },
-  'SMP': { class: 'level-smp', badge: 'smp', icon: '🔵', label: 'SMP', color: '#3b82f6', emoji: '📘' },
-  'SMA': { class: 'level-sma', badge: 'sma', icon: '🟡', label: 'SMA', color: '#f59e0b', emoji: '📙' },
-  'Mahasiswa': { class: 'level-mahasiswa', badge: 'mahasiswa', icon: '🟣', label: 'Mahasiswa', color: '#8b5cf6', emoji: '🎓' },
-  'Umum': { class: 'level-umum', badge: 'umum', icon: '⚪', label: 'Umum', color: '#6b7280', emoji: '📚' }
+  'SD': { class: 'level-sd', label: 'SD', color: '#10b981' },
+  'SMP': { class: 'level-smp', label: 'SMP', color: '#3b82f6' },
+  'SMA': { class: 'level-sma', label: 'SMA', color: '#f59e0b' },
+  'Mahasiswa': { class: 'level-mahasiswa', label: 'Mahasiswa', color: '#8b5cf6' },
+  'Umum': { class: 'level-umum', label: 'Umum', color: '#6b7280' }
 };
 
-let currentLevelMode = 'otomatis';
-let selectedLevel = 'otomatis';
-
-function loadLevelPreference() {
-  const saved = localStorage.getItem(LEVEL_STORE);
-  if (saved) { try { const data = JSON.parse(saved); currentLevelMode = data.mode || 'otomatis'; selectedLevel = data.level || 'otomatis'; return true; } catch(e) {} }
-  return false;
-}
-
-function saveLevelPreference() { localStorage.setItem(LEVEL_STORE, JSON.stringify({ mode: currentLevelMode, level: selectedLevel })); }
-
-function toggleLevelMode() {
-  const mode = document.getElementById('levelMode').value;
-  currentLevelMode = mode;
-  saveLevelPreference();
-  updateLevelUI();
-}
-
-function selectLevel(level) {
-  selectedLevel = level;
-  if (level === 'otomatis') { currentLevelMode = 'otomatis'; document.getElementById('levelMode').value = 'otomatis'; } 
-  else { currentLevelMode = 'manual'; document.getElementById('levelMode').value = 'manual'; }
-  saveLevelPreference();
-  updateLevelUI();
-}
-
-function selectLevelChat(level) { selectLevel(level); updateLevelUI(); }
-function selectLevelVoice(level) { selectLevel(level); updateLevelUI(); }
-
-function updateLevelUI() {
-  ['levelSelector', 'levelSelectorChat', 'levelSelectorVoice'].forEach(id => {
-    const container = document.getElementById(id);
-    if (!container) return;
-    container.querySelectorAll('.level-option').forEach(btn => {
-      const lvl = btn.dataset.level;
-      btn.className = 'level-option';
-      if (lvl === selectedLevel) btn.classList.add('active-' + (lvl === 'otomatis' ? 'otomatis' : lvl));
-    });
-  });
-  const config = getLevelConfig(selectedLevel);
-  const st = document.getElementById('levelStatus');
-  if (st) st.innerHTML = selectedLevel === 'otomatis' ? '🤖 Mode: Otomatis - AI akan mendeteksi level dari pertanyaan' : `✋ Mode: Manual - Level ${config.label} ${config.emoji}`;
-  document.getElementById('levelMode').value = currentLevelMode;
-}
-
 function getLevelConfig(level) { return LEVEL_CONFIG[level] || LEVEL_CONFIG['Umum']; }
-function getActiveLevel(text) { return selectedLevel !== 'otomatis' ? selectedLevel : detectLevel(text); }
 
 function detectLevel(text) {
   const lower = text.toLowerCase();
@@ -720,9 +606,17 @@ function detectLevel(text) {
 }
 
 function getLevelDescription(level) {
-  const desc = { 'SD': 'SD - penjelasan sangat sederhana dengan banyak contoh visual', 'SMP': 'SMP - penjelasan menengah dengan contoh konkret', 'SMA': 'SMA - penjelasan detail dengan konsep dan rumus', 'Mahasiswa': 'Mahasiswa - penjelasan mendalam dengan analisis kritis', 'Umum': 'Umum - penjelasan untuk semua kalangan' };
+  const desc = { 
+    'SD': 'SD - penjelasan sangat sederhana dengan banyak contoh visual', 
+    'SMP': 'SMP - penjelasan menengah dengan contoh konkret', 
+    'SMA': 'SMA - penjelasan detail dengan konsep dan rumus', 
+    'Mahasiswa': 'Mahasiswa - penjelasan mendalam dengan analisis kritis', 
+    'Umum': 'Umum - penjelasan untuk semua kalangan' 
+  };
   return desc[level] || desc['SMP'];
 }
+
+function getActiveLevel(text) { return detectLevel(text); }
 
 // ============================================================
 // ============ API KEY MANAGEMENT ============
@@ -788,8 +682,7 @@ function addAIBubble(answer, level, containerId, showActions = true) {
   const container = document.getElementById(containerId);
   const config = getLevelConfig(level);
   const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  const levelClass = level !== 'otomatis' ? config.class : '';
-  const levelBadge = `<span class="level-badge-sm ${config.badge}">${config.emoji} ${config.label}</span>`;
+  const levelClass = config.class;
   const bubble = document.createElement('div');
   bubble.className = `chat-bubble ai ${levelClass}`;
   let actionsHtml = '';
@@ -806,11 +699,7 @@ function addAIBubble(answer, level, containerId, showActions = true) {
     <div class="chat-avatar ai">🤖</div>
     <div class="chat-content">
       <div class="chat-text">${renderAI(answer)}</div>
-      <div class="chat-meta">
-        <span>${config.icon} Level: ${config.label}</span>
-        ${levelBadge}
-        <span>• ${time}</span>
-      </div>
+      <div class="chat-meta"><span>• ${time}</span></div>
       ${actionsHtml}
     </div>
   `;
@@ -850,6 +739,24 @@ function scrollChat(containerId) {
   if (container) {
     setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
   }
+}
+
+function showResultChat() {
+  const card = document.getElementById('resultCard');
+  card.classList.remove('hidden');
+}
+
+function hideResultChat() {
+  const card = document.getElementById('resultCard');
+  card.classList.add('hidden');
+  // Reset chat container
+  const container = document.getElementById('resultChat');
+  container.innerHTML = '';
+}
+
+function resetResultChat() {
+  hideResultChat();
+  currentResultTopic = '';
 }
 
 function setWelcomeMessage(containerId, title, message) {
@@ -940,6 +847,10 @@ function switchTab(tab) {
   document.querySelectorAll('.card[id^="tab"]').forEach(el => el.classList.add('hidden'));
   const target = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
   if (target) target.classList.remove('hidden');
+  
+  // HIDE result chat ketika pindah ke tab lain
+  hideResultChat();
+  
   if (tab === 'materi') renderMateri();
   if (tab === 'notes') renderNotes();
   if (tab === 'progress') updateProgressUI();
@@ -955,6 +866,8 @@ function quickAsk(topic, prompt) {
   document.getElementById('topic').value = topic;
   document.getElementById('question').value = prompt + " Topik: " + topic + ".";
   document.getElementById('question').focus();
+  // Reset result chat
+  resetResultChat();
   switchTab('learn');
 }
 
@@ -972,14 +885,16 @@ async function askLearn(mode) {
   currentResultTopic = topic || 'Umum';
   
   const containerId = "resultChat";
-  // Jika pertama kali atau kosong, set welcome dulu
-  if (document.getElementById(containerId).children.length === 0) {
-    setWelcomeMessage(containerId, '💡 Hasil Belajar', 'Tulis topik dan pertanyaan di tab 📚 Belajar.');
-  }
+  // Reset dan tampilkan hasil chat
+  resetResultChat();
+  showResultChat();
+  
+  // Set welcome message dulu
+  setWelcomeMessage(containerId, '💡 Hasil Belajar', '');
   
   addUserBubble(fullText, containerId);
   const loading = addLoadingBubble(containerId);
-  document.getElementById('status').textContent = `⏳ AI (${level}) sedang menyiapkan materi...`;
+  document.getElementById('status').textContent = `⏳ AI sedang menyiapkan materi...`;
   document.getElementById('status').className = "status";
   
   try {
@@ -995,7 +910,7 @@ async function askLearn(mode) {
     removeLoadingBubble();
     addAIBubble(answer, level, containerId, true);
     window.lastResult = { topic, question: q, level };
-    document.getElementById('status').textContent = `✅ Selesai (Level: ${level})`;
+    document.getElementById('status').textContent = `✅ Selesai`;
     document.getElementById('status').className = "status ok";
     document.getElementById('question').value = "";
     updatePoints(15);
@@ -1025,7 +940,6 @@ async function sendResultChat() {
   document.getElementById('resultStatus').className = "status";
   const loading = addLoadingBubble(containerId);
   
-  // Gunakan topik terakhir atau deteksi dari pertanyaan
   const topic = currentResultTopic || 'Umum';
   const level = getActiveLevel(message);
   
@@ -1041,7 +955,7 @@ async function sendResultChat() {
     if (!answer) throw new Error("Tidak ada jawaban.");
     removeLoadingBubble();
     addAIBubble(answer, level, containerId, true);
-    document.getElementById('resultStatus').textContent = `✅ Respon untuk level ${level}`;
+    document.getElementById('resultStatus').textContent = `✅ Respon diterima`;
     document.getElementById('resultStatus').className = "status ok";
     updatePoints(10);
     updateProgress(topic, level);
@@ -1054,12 +968,10 @@ async function sendResultChat() {
 }
 
 function askFollowUp(btn) {
-  // Isi input dengan kata kunci dari jawaban terakhir
   const input = document.getElementById('resultChatInput');
   const bubble = btn.closest('.chat-bubble');
   const textEl = bubble.querySelector('.chat-text');
   let text = textEl.textContent || textEl.innerText;
-  // Ambil 50 karakter pertama sebagai konteks
   const snippet = text.substring(0, 150).trim();
   input.value = 'Jelaskan lebih lanjut tentang: ' + snippet;
   input.focus();
@@ -1128,6 +1040,7 @@ function learnSubject(subject) {
   document.getElementById('topic').value = subject;
   document.getElementById('question').value = `Jelaskan semua materi tentang ${subject} dengan lengkap. Topik: ${data.topics.map(t => t.name).join(', ')}.`;
   document.getElementById('question').focus();
+  resetResultChat();
   switchTab('learn');
 }
 
@@ -1135,6 +1048,7 @@ function learnTopic(subject, topic, prompt) {
   document.getElementById('topic').value = subject + ' - ' + topic;
   document.getElementById('question').value = prompt + ` tentang ${topic} dalam ${subject}.`;
   document.getElementById('question').focus();
+  resetResultChat();
   switchTab('learn');
 }
 
@@ -1246,7 +1160,7 @@ async function processVoiceInput(text) {
     addAIBubble(answer, level, containerId, true);
     const clean = answer.replace(/\*\*/g,'').replace(/#/g,'').replace(/---/g,'');
     speakText(clean);
-    document.getElementById('voiceStatus').textContent = `✅ Respon untuk level ${level}`;
+    document.getElementById('voiceStatus').textContent = `✅ Respon diterima`;
     document.getElementById('voiceText').textContent = '🔊 "' + clean.substring(0, 100) + (clean.length > 100 ? '...' : '');
     document.getElementById('voiceText').className = 'voice-text';
     updatePoints(5);
@@ -1298,7 +1212,7 @@ async function sendChat() {
     if (!answer) throw new Error("Tidak ada jawaban.");
     removeLoadingBubble();
     addAIBubble(answer, level, containerId, true);
-    document.getElementById('chatStatus').textContent = `✅ Respon untuk level ${level}`;
+    document.getElementById('chatStatus').textContent = `✅ Respon diterima`;
     document.getElementById('chatStatus').className = "status ok";
     updatePoints(10);
   } catch(err) {
@@ -1327,7 +1241,7 @@ async function generateQuiz() {
   if (!topic) { document.getElementById('quizStatus').textContent = "⚠️ Masukkan topik kuis."; document.getElementById('quizStatus').className = "status err"; return; }
   const level = getActiveLevel(topic);
   const model = document.getElementById('model').value;
-  document.getElementById('quizStatus').textContent = `⏳ AI (${level}) membuat soal...`;
+  document.getElementById('quizStatus').textContent = `⏳ AI membuat soal...`;
   document.getElementById('quizStatus').className = "status";
   document.getElementById('quizContainer').innerHTML = '<div class="loading" style="justify-content:center;padding:20px"><span>🤖</span><span>Membuat soal</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
   try {
@@ -1345,7 +1259,7 @@ async function generateQuiz() {
     quizData = parsed.questions;
     quizAnswered = false;
     renderQuiz(quizData);
-    document.getElementById('quizStatus').textContent = `✅ ${quizData.length} soal (Level: ${level})`;
+    document.getElementById('quizStatus').textContent = `✅ ${quizData.length} soal berhasil dibuat`;
     document.getElementById('quizStatus').className = "status ok";
   } catch(err) {
     document.getElementById('quizContainer').innerHTML = `<div class="lesson-box" style="text-align:center;padding:20px;border-color:var(--danger)"><p style="color:var(--danger)">❌ ${escapeHtml(err.message)}</p><button class="btn secondary" style="margin-top:10px;width:auto;padding:8px 16px" onclick="generateQuiz()">🔄 Coba Lagi</button></div>`;
@@ -1587,14 +1501,14 @@ let userBadges = JSON.parse(localStorage.getItem(ACHIEVEMENT_STORE)) || [];
 function renderAchievements() {
   const container = document.getElementById('achievementGrid');
   const achievements = [
-    { id: 'first_question', name: 'Pertama Belajar', icon: '🌟', desc: 'Mulai belajar pertama kali' },
-    { id: 'five_questions', name: 'Rajin Belajar', icon: '📚', desc: '5 pertanyaan terjawab' },
-    { id: 'twenty_questions', name: 'Pelajar Tekun', icon: '🎯', desc: '20 pertanyaan terjawab' },
-    { id: 'fifty_questions', name: 'Cendekia', icon: '🧠', desc: '50 pertanyaan terjawab' },
-    { id: 'hundred_questions', name: 'Jenius', icon: '💡', desc: '100 pertanyaan terjawab' },
-    { id: 'sd_master', name: 'Master SD', icon: '🟢', desc: 'Level SD dengan 50 poin' },
-    { id: 'smp_master', name: 'Master SMP', icon: '🔵', desc: 'Level SMP dengan 100 poin' },
-    { id: 'sma_master', name: 'Master SMA', icon: '🟡', desc: 'Level SMA dengan 200 poin' }
+    { id: 'first_question', name: 'Pertama Belajar', icon: '🌟' },
+    { id: 'five_questions', name: 'Rajin Belajar', icon: '📚' },
+    { id: 'twenty_questions', name: 'Pelajar Tekun', icon: '🎯' },
+    { id: 'fifty_questions', name: 'Cendekia', icon: '🧠' },
+    { id: 'hundred_questions', name: 'Jenius', icon: '💡' },
+    { id: 'sd_master', name: 'Master SD', icon: '🟢' },
+    { id: 'smp_master', name: 'Master SMP', icon: '🔵' },
+    { id: 'sma_master', name: 'Master SMA', icon: '🟡' }
   ];
   const unlocked = userBadges;
   container.innerHTML = achievements.map(a => `
@@ -1738,15 +1652,14 @@ if (localStorage.getItem(THEME_STORE) === 'dark') { document.body.classList.add(
 // ============================================================
 // ============ INIT ============
 // ============================================================
-if (!loadLevelPreference()) { selectedLevel = 'otomatis'; currentLevelMode = 'otomatis'; }
-updateLevelUI();
-
 if (window.speechSynthesis) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
 
-setWelcomeMessage('resultChat', '💡 Hasil Belajar', 'Tulis topik dan pertanyaan di tab 📚 Belajar, lalu klik ✨ Jelaskan. Kamu juga bisa bertanya lanjutan di sini!');
+// Result chat hidden by default
+hideResultChat();
+
 setWelcomeMessage('chatContainer', '👋 Halo! Siap membantu belajar!', 'Aku adalah tutor AI pribadimu. Tanyakan apa saja tentang pelajaran!');
 setWelcomeMessage('voiceChatContainer', '🎙️ Voice Chat Aktif', 'Klik tombol mikrofon 🎙️ dan bicaralah. AI akan merespon dengan suara.');
 
