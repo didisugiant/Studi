@@ -542,7 +542,7 @@ select option { background: #1a1a2e; }
 .tab-btn.premium-tab.active::after { background: var(--gradient-gold); }
 
 /* ============================================================
-   QUIZ MODERN (TIMER DIHAPUS)
+   QUIZ MODERN
    ============================================================ */
 .quiz-question {
   background: rgba(255,255,255,0.03);
@@ -794,6 +794,54 @@ select option { background: #1a1a2e; }
   transition: var(--transition);
 }
 .chat-input-area button:hover { transform: scale(1.03); }
+
+/* ===== FULLSCREEN CHAT ===== */
+.chat-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.chat-fullscreen .chat-container {
+  flex: 1;
+  max-height: none;
+  overflow-y: auto;
+}
+.chat-fullscreen .chat-fullscreen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 12px;
+}
+.chat-fullscreen .chat-fullscreen-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+}
+.chat-fullscreen .chat-fullscreen-header .close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: var(--transition);
+}
+.chat-fullscreen .chat-fullscreen-header .close-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
 
 .loading-dots {
   display: flex;
@@ -1374,6 +1422,7 @@ select option { background: #1a1a2e; }
   .card { padding: 14px 16px; }
   .points-card .points { font-size: 20px; }
   .flashcard .front, .flashcard .back { font-size: 14px; }
+  .chat-fullscreen { padding: 12px; }
 }
 
 @media (max-width: 480px) {
@@ -1530,8 +1579,11 @@ select option { background: #1a1a2e; }
 <!-- ===== TAB CHAT ===== -->
 <section id="tabChat" class="card hidden">
  <div class="card-title">💬 Chat dengan Tutor AI</div>
- <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-  <button onclick="autoSummary()" class="btn btn-sm btn-primary" style="margin:0">📝 Auto-Summary</button>
+ <div style="display:flex;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
+  <div style="display:flex;gap:6px">
+   <button onclick="autoSummary()" class="btn btn-sm btn-primary" style="margin:0">📝 Auto-Summary</button>
+   <button onclick="toggleFullscreenChat()" class="btn btn-sm btn-secondary" style="margin:0">⛶ Fullscreen</button>
+  </div>
   <button onclick="clearChatHistory()" style="background:transparent;border:0;color:var(--text-muted);font-size:10px;cursor:pointer;padding:4px 8px;border-radius:var(--radius-sm)">🗑️ Hapus riwayat</button>
  </div>
  <div id="chatContainer" class="chat-container"></div>
@@ -1557,7 +1609,7 @@ select option { background: #1a1a2e; }
  <div id="voiceChatContainer" class="chat-container" style="max-height:260px;margin-top:8px"></div>
 </section>
 
-<!-- ===== TAB KUIS (TIMER DIHAPUS) ===== -->
+<!-- ===== TAB KUIS ===== -->
 <section id="tabQuiz" class="card hidden">
  <div class="card-title">🧠 Kuis Interaktif</div>
  <div class="daily-challenge">
@@ -1751,6 +1803,20 @@ select option { background: #1a1a2e; }
 <div class="footer">StudyAI Pro • Belajar lebih mudah dengan bantuan AI</div>
 </div>
 
+<!-- ===== FULLSCREEN CHAT OVERLAY ===== -->
+<div id="fullscreenChatOverlay" class="chat-fullscreen hidden">
+  <div class="chat-fullscreen-header">
+    <h2>💬 Chat dengan Tutor AI</h2>
+    <button class="close-btn" onclick="toggleFullscreenChat()">✕</button>
+  </div>
+  <div id="fullscreenChatContainer" class="chat-container"></div>
+  <div class="chat-input-area">
+    <input id="fullscreenChatInput" placeholder="Tanya apa saja tentang pelajaran..." onkeypress="if(event.key==='Enter') sendFullscreenChat()">
+    <button onclick="sendFullscreenChat()">Kirim ➤</button>
+  </div>
+  <div id="fullscreenChatStatus" class="status"></div>
+</div>
+
 <script>
 // ============================================================
 // ============ KONFIGURASI ============
@@ -1774,6 +1840,7 @@ let isListening = false, recognition = null, isProcessingVoice = false;
 let currentResultTopic = '';
 let quizDifficulty = 'medium';
 let wrongAnswersList = [];
+let isFullscreenChat = false;
 
 // ===== GAME VARIABLES =====
 let gameState = {
@@ -1947,14 +2014,67 @@ function copyChatText(btn){
 function fallbackCopy(txt,btn){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');btn.textContent='✅ Tersalin';setTimeout(()=>btn.textContent='📋 Salin',1500)}catch(e){alert('Tidak dapat menyalin.')}document.body.removeChild(ta)}
 
 // ============================================================
+// ============ FULLSCREEN CHAT ============
+// ============================================================
+function toggleFullscreenChat(){
+  const overlay = document.getElementById('fullscreenChatOverlay');
+  const normalChat = document.getElementById('chatContainer');
+  const fullscreenChat = document.getElementById('fullscreenChatContainer');
+  
+  if(overlay.classList.contains('hidden')){
+    // Enter fullscreen
+    isFullscreenChat = true;
+    fullscreenChat.innerHTML = normalChat.innerHTML;
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    scrollChat('fullscreenChatContainer');
+    setTimeout(()=>document.getElementById('fullscreenChatInput').focus(),100);
+  } else {
+    // Exit fullscreen
+    isFullscreenChat = false;
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+    normalChat.innerHTML = fullscreenChat.innerHTML;
+  }
+}
+
+async function sendFullscreenChat(){
+  const key=getKey();if(!key)return;
+  const input=document.getElementById('fullscreenChatInput'),msg=input.value.trim();
+  if(!msg){document.getElementById('fullscreenChatStatus').textContent="⚠️ Tulis pertanyaan.";document.getElementById('fullscreenChatStatus').className="status err";return}
+  const cid="fullscreenChatContainer";
+  addUserBubble(msg,cid);input.value="";
+  document.getElementById('fullscreenChatStatus').textContent="⏳ AI merespon...";document.getElementById('fullscreenChatStatus').className="status";
+  const loading=addLoadingBubble(cid);
+  try{
+    const level=getActiveLevel(msg),model=document.getElementById('model').value;
+    const resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+      body:JSON.stringify({model,messages:[{role:"system",content:`Kamu adalah tutor AI untuk pelajar tingkat ${level}. ${getLevelDescription(level)}. Gunakan bahasa Indonesia natural.`},{role:"user",content:msg}],temperature:.4,max_completion_tokens:2000})
+    });
+    const data=await resp.json();
+    if(!resp.ok)throw new Error(data?.error?.message||"HTTP "+resp.status);
+    const answer=data?.choices?.[0]?.message?.content?.trim();
+    if(!answer)throw new Error("Tidak ada jawaban.");
+    removeLoadingBubble();addAIBubble(answer,level,cid,true);
+    document.getElementById('fullscreenChatStatus').textContent="✅ Respon diterima";document.getElementById('fullscreenChatStatus').className="status ok";
+    updatePoints(10);
+  }catch(err){
+    removeLoadingBubble();addAIBubble('⚠️ Gagal: '+err.message,'Umum',cid,false);
+    document.getElementById('fullscreenChatStatus').textContent="❌ "+err.message;document.getElementById('fullscreenChatStatus').className="status err";
+  }
+}
+
+// ============================================================
 // ============ AUTO-SUMMARY ============
 // ============================================================
 function autoSummary(){
-  const container=document.getElementById('chatContainer');
+  const container=document.getElementById(isFullscreenChat ? 'fullscreenChatContainer' : 'chatContainer');
   const messages=container.querySelectorAll('.chat-bubble.ai .chat-text');
   if(messages.length===0){
-    document.getElementById('chatStatus').textContent="💡 Belum ada percakapan untuk di-ringkas.";
-    document.getElementById('chatStatus').className="status";
+    const statusId = isFullscreenChat ? 'fullscreenChatStatus' : 'chatStatus';
+    document.getElementById(statusId).textContent="💡 Belum ada percakapan untuk di-ringkas.";
+    document.getElementById(statusId).className="status";
     return;
   }
   let summary='📝 **Ringkasan Percakapan:**\n\n';
@@ -1962,13 +2082,15 @@ function autoSummary(){
     const text=msg.textContent||msg.innerText;
     if(text.length>50)summary+=`• ${text.substring(0,100)}${text.length>100?'...':''}\n`;
   });
-  addUserBubble('📝 Buatkan ringkasan dari percakapan ini', 'chatContainer');
-  const loading=addLoadingBubble('chatContainer');
+  const cid = isFullscreenChat ? 'fullscreenChatContainer' : 'chatContainer';
+  addUserBubble('📝 Buatkan ringkasan dari percakapan ini', cid);
+  const loading=addLoadingBubble(cid);
   setTimeout(()=>{
     removeLoadingBubble();
-    addAIBubble(summary, 'Umum', 'chatContainer', true);
-    document.getElementById('chatStatus').textContent="✅ Ringkasan dibuat!";
-    document.getElementById('chatStatus').className="status ok";
+    addAIBubble(summary, 'Umum', cid, true);
+    const statusId = isFullscreenChat ? 'fullscreenChatStatus' : 'chatStatus';
+    document.getElementById(statusId).textContent="✅ Ringkasan dibuat!";
+    document.getElementById(statusId).className="status ok";
   }, 800);
 }
 
@@ -2152,7 +2274,7 @@ async function processVoiceInput(text){
     const clean=answer.replace(/\*\*/g,'').replace(/#/g,'').replace(/---/g,'');
     speakText(clean);
     document.getElementById('voiceStatus').textContent="✅ Respon diterima";
-    document.getElementById('voiceText').textContent='🔊 "'+clean.substring(0,100)+(clean.length>100?'...':'');';
+    document.getElementById('voiceText').textContent='🔊 "'+clean.substring(0,100)+(clean.length>100?'...':'');
     document.getElementById('voiceText').className='voice-text';
     updatePoints(5);
   }catch(err){
@@ -2202,8 +2324,10 @@ async function sendChat(){
 
 function clearChatHistory(){
   if(confirm("Hapus semua riwayat chat?")){
-    setWelcomeMessage('chatContainer','👋 Chat dibersihkan!','Mulai chat baru dengan tutor AI pribadimu.');
-    document.getElementById('chatStatus').textContent="🗑️ Riwayat dihapus";document.getElementById('chatStatus').className="status";
+    const cid = isFullscreenChat ? 'fullscreenChatContainer' : 'chatContainer';
+    setWelcomeMessage(cid,'👋 Chat dibersihkan!','Mulai chat baru dengan tutor AI pribadimu.');
+    const statusId = isFullscreenChat ? 'fullscreenChatStatus' : 'chatStatus';
+    document.getElementById(statusId).textContent="🗑️ Riwayat dihapus";document.getElementById(statusId).className="status";
   }
 }
 
