@@ -542,7 +542,7 @@ select option { background: #1a1a2e; }
 .tab-btn.premium-tab.active::after { background: var(--gradient-gold); }
 
 /* ============================================================
-   QUIZ MODERN
+   QUIZ MODERN (TIMER DIHAPUS)
    ============================================================ */
 .quiz-question {
   background: rgba(255,255,255,0.03);
@@ -562,20 +562,6 @@ select option { background: #1a1a2e; }
   font-weight: 600;
   margin-bottom: 8px;
 }
-.quiz-timer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #f59e0b;
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  background: rgba(245,158,11,0.06);
-  border: 1px solid rgba(245,158,11,0.1);
-  margin-bottom: 10px;
-}
-.quiz-timer.warning { color: #ef4444; border-color: rgba(239,68,68,0.2); }
 .quiz-options { display: flex; flex-direction: column; gap: 5px; }
 .quiz-options label {
   display: flex;
@@ -665,7 +651,7 @@ select option { background: #1a1a2e; }
   font-size: 13px;
 }
 
-/* ===== CHAT STYLES (disederhanakan) ===== */
+/* ===== CHAT STYLES ===== */
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -921,7 +907,7 @@ select option { background: #1a1a2e; }
   margin-top: 16px;
 }
 
-/* ===== GAME STYLES (disederhanakan) ===== */
+/* ===== GAME STYLES ===== */
 .game-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1571,7 +1557,7 @@ select option { background: #1a1a2e; }
  <div id="voiceChatContainer" class="chat-container" style="max-height:260px;margin-top:8px"></div>
 </section>
 
-<!-- ===== TAB KUIS ===== -->
+<!-- ===== TAB KUIS (TIMER DIHAPUS) ===== -->
 <section id="tabQuiz" class="card hidden">
  <div class="card-title">🧠 Kuis Interaktif</div>
  <div class="daily-challenge">
@@ -1786,10 +1772,8 @@ const $ = id => document.getElementById(id);
 let quizData = null, quizAnswered = false;
 let isListening = false, recognition = null, isProcessingVoice = false;
 let currentResultTopic = '';
-let quizTimer = null, timeLeft = 30;
 let quizDifficulty = 'medium';
 let wrongAnswersList = [];
-let timerActive = false;
 
 // ===== GAME VARIABLES =====
 let gameState = {
@@ -1870,7 +1854,7 @@ function removeUserKey(){localStorage.removeItem(KEY_STORE);API_KEY='';$("apiKey
 function getKey(){if(API_KEY)return API_KEY;const k=$("apiKey").value.trim()||localStorage.getItem(KEY_STORE)||"";if(k){API_KEY=k;return k}if(typeof CONFIG!=='undefined'&&CONFIG.GROQ_API_KEY){API_KEY=CONFIG.GROQ_API_KEY;return API_KEY}$("settings").classList.remove("hidden");$("keyStatus").textContent="⚠️ Masukkan API Key";$("keyStatus").className="status err";$("apiKey").focus();return""}
 
 // ============================================================
-// ============ CHAT FUNCTIONS (disederhanakan) ============
+// ============ CHAT FUNCTIONS ============
 // ============================================================
 function escapeHtml(s){if(!s)return'';return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 
@@ -2168,7 +2152,7 @@ async function processVoiceInput(text){
     const clean=answer.replace(/\*\*/g,'').replace(/#/g,'').replace(/---/g,'');
     speakText(clean);
     document.getElementById('voiceStatus').textContent="✅ Respon diterima";
-    document.getElementById('voiceText').textContent='🔊 "'+clean.substring(0,100)+(clean.length>100?'...':'');
+    document.getElementById('voiceText').textContent='🔊 "'+clean.substring(0,100)+(clean.length>100?'...':'');';
     document.getElementById('voiceText').className='voice-text';
     updatePoints(5);
   }catch(err){
@@ -2265,7 +2249,7 @@ function learnTopic(s,t,p){
 }
 
 // ============================================================
-// ============ QUIZ - DIPERBAIKI ============
+// ============ QUIZ - TANPA TIMER ============
 // ============================================================
 function setQuizDifficulty(diff){
   quizDifficulty=diff;
@@ -2281,54 +2265,10 @@ function getQuestionsCount(){
   return quizDifficulty==='easy'?5:quizDifficulty==='medium'?7:10;
 }
 
-function getTimeLimit(){
-  return quizDifficulty==='easy'?30:quizDifficulty==='medium'?20:15;
-}
-
-function startTimer(){
-  // Cek apakah timer sudah berjalan
-  if(timerActive) return;
-  timerActive = true;
-  
-  if(quizTimer) clearInterval(quizTimer);
-  timeLeft = getTimeLimit();
-  
-  // Cari elemen timer display
-  const timerDisplay = document.getElementById('quizTimerDisplay');
-  if(!timerDisplay) {
-    timerActive = false;
-    return;
-  }
-  
-  timerDisplay.textContent = '⏱️ ' + timeLeft + ' detik';
-  timerDisplay.className = 'quiz-timer';
-  
-  quizTimer = setInterval(() => {
-    timeLeft--;
-    if(timerDisplay) {
-      timerDisplay.textContent = '⏱️ ' + timeLeft + ' detik';
-      if(timeLeft <= 5) timerDisplay.classList.add('warning');
-    }
-    if(timeLeft <= 0) {
-      clearInterval(quizTimer);
-      quizTimer = null;
-      timerActive = false;
-      document.getElementById('quizStatus').textContent = "⏰ Waktu habis!";
-      document.getElementById('quizStatus').className = "status err";
-      submitQuiz();
-    }
-  }, 1000);
-}
-
 async function generateQuiz(){
   const key=getKey();if(!key)return;
   const topic=document.getElementById('quizTopic').value.trim();
   if(!topic){document.getElementById('quizStatus').textContent="⚠️ Masukkan topik kuis.";document.getElementById('quizStatus').className="status err";return}
-  
-  // Reset timer state
-  if(quizTimer) clearInterval(quizTimer);
-  quizTimer = null;
-  timerActive = false;
   
   const level=getActiveLevel(topic),model=document.getElementById('model').value;
   const qCount=getQuestionsCount();
@@ -2350,8 +2290,6 @@ async function generateQuiz(){
     quizData=parsed.questions;quizAnswered=false;wrongAnswersList=[];
     renderQuiz(quizData);
     document.getElementById('quizStatus').textContent=`✅ ${quizData.length} soal berhasil dibuat`;document.getElementById('quizStatus').className="status ok";
-    // Timer akan mulai otomatis saat soal dirender
-    setTimeout(() => startTimer(), 300);
     updateDailyChallenge();
   }catch(err){
     document.getElementById('quizContainer').innerHTML=`<div class="lesson-box" style="text-align:center;padding:20px;border-color:#ff6b7a"><p style="color:#ff6b7a">❌ ${escapeHtml(err.message)}</p><button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="generateQuiz()">🔄 Coba Lagi</button></div>`;
@@ -2361,8 +2299,7 @@ async function generateQuiz(){
 
 function renderQuiz(qs){
   const c=$('quizContainer');
-  let html=`<div class="card-title" style="margin-top:0">📝 Jawab soal-soal berikut</div>
-            <div class="quiz-timer" id="quizTimerDisplay">⏱️ ${getTimeLimit()} detik</div>`;
+  let html=`<div class="card-title" style="margin-top:0">📝 Jawab soal-soal berikut</div>`;
   qs.forEach((q,i)=>{
     html+=`<div class="quiz-question" id="q${i}"><div class="q-number">Soal ${i+1} dari ${qs.length}</div><div class="q-text">${escapeHtml(q.question)}</div><div class="quiz-options" id="options${i}">`;
     const labels=['A','B','C','D'];
@@ -2384,13 +2321,6 @@ function selectAnswer(qi,oi){
 
 function submitQuiz(){
   if(!quizData||quizAnswered)return;
-  
-  // Stop timer
-  if(quizTimer){
-    clearInterval(quizTimer);
-    quizTimer = null;
-    timerActive = false;
-  }
   
   const qs=quizData;let correct=0,total=qs.length,allAnswered=true;
   const wrongQuestions=[];
@@ -2443,12 +2373,6 @@ function showAnswerKeys(){
 }
 
 function resetQuiz(){
-  // Stop timer
-  if(quizTimer){
-    clearInterval(quizTimer);
-    quizTimer = null;
-    timerActive = false;
-  }
   quizData=null;
   quizAnswered=false;
   wrongAnswersList=[];
@@ -2615,7 +2539,7 @@ function updateGameStats(game,score){
 }
 
 // ============================================================
-// ============ GAME FUNCTIONS (disederhanakan) ============
+// ============ GAME FUNCTIONS ============
 // ============================================================
 function resetGameUI(){
   const container=document.getElementById('gameContainer');
