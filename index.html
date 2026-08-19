@@ -9,10 +9,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-/* ============================================================
-   MODERN CSS - DESAIN TERKINI
-   ============================================================ */
-
 /* ===== ROOT VARIABLES ===== */
 :root {
   --bg-primary: #0a0a1a;
@@ -117,12 +113,12 @@ body {
   z-index: 1;
 }
 
-/* ===== HEADER MODERN (DIPERBAIKI) ===== */
+/* ===== HEADER MODERN ===== */
 header {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 12px 20px; /* JARAK KIRI KANAN DITAMBAHKAN agar tidak mepet */
+  padding: 12px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,19 +134,26 @@ header {
   gap: 12px;
 }
 
-.logo-wrapper { position: relative; }
+.logo-wrapper {
+  position: relative;
+}
 .logo {
-  width: 40px; height: 40px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   font-size: 18px;
   background: var(--gradient-primary);
   box-shadow: var(--shadow-glow);
   transition: var(--transition);
 }
-.logo-wrapper:hover .logo { transform: scale(1.05) rotate(-5deg); }
+.logo-wrapper:hover .logo {
+  transform: scale(1.05) rotate(-5deg);
+}
 .logo-pulse {
-  position: absolute; inset: -4px;
+  position: absolute;
+  inset: -4px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(109,124,255,0.2);
   animation: pulseRing 2s ease-in-out infinite;
@@ -161,27 +164,41 @@ header {
 }
 
 .brand-text h1 {
-  font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
   background: var(--gradient-primary);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .brand-text p {
-  font-size: 10px; color: var(--text-muted); margin-top: -2px; font-weight: 500; letter-spacing: 0.3px;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: -2px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 .brand-text .pro-badge {
-  font-size: 8px; font-weight: 700; background: var(--gradient-premium); color: #fff;
-  padding: 1px 8px; border-radius: var(--radius-full); margin-left: 6px;
-  -webkit-text-fill-color: #fff; display: inline-block; vertical-align: middle;
+  font-size: 8px;
+  font-weight: 700;
+  background: var(--gradient-premium);
+  color: #fff;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+  margin-left: 6px;
+  -webkit-text-fill-color: #fff;
+  display: inline-block;
+  vertical-align: middle;
 }
 
-/* ===== HEADER ACTIONS (TOMBOL KANAN ATAS) DIPERBAIKI ===== */
 .header-actions {
   display: flex;
-  gap: 8px; /* JARAK ANTAR TOMBOL DITAMBAHKAN */
+  gap: 6px;
   align-items: center;
 }
 .icon-btn {
-  width: 36px;  /* UKURAN TOMBOL DISAMAKAN */
+  width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
   background: rgba(255,255,255,0.04);
@@ -193,16 +210,61 @@ header {
   cursor: pointer;
   transition: var(--transition);
 }
-/* EFEK HOVER LEBIH ELEGAN */
 .icon-btn:hover {
-  background: rgba(255,255,255,0.12); /* Background lebih terang saat di-hover */
-  border-color: rgba(255,255,255,0.1);
-  color: #ffffff;
-  transform: translateY(-2px) scale(1.05); /* Sedikit membesar dan melayang */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.08);
+  transform: translateY(-2px);
+  color: #fff;
 }
 
-/* ===== POINTS CARD MODERN ===== */
+/* ===== HERO MODERN ===== */
+.hero {
+  padding: 24px 0 16px;
+  position: relative;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px 4px 8px;
+  background: rgba(109,124,255,0.1);
+  border: 1px solid rgba(109,124,255,0.15);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  color: #6d7cff;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.hero-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #35d38a;
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+
+.hero h2 {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #ffffff 30%, #6d7cff 70%, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* ===== POINTS CARD ===== */
 .points-card {
   display: flex;
   align-items: center;
@@ -247,7 +309,7 @@ header {
   border: 1px solid rgba(255,255,255,0.04);
 }
 
-/* ===== QUICK GRID MODERN ===== */
+/* ===== QUICK GRID ===== */
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -306,7 +368,7 @@ header {
   z-index: 1;
 }
 
-/* ===== CARDS MODERN ===== */
+/* ===== CARDS ===== */
 .card {
   background: rgba(255,255,255,0.03);
   backdrop-filter: blur(20px);
@@ -373,7 +435,7 @@ input:focus, select:focus, textarea:focus {
 textarea { min-height: 80px; resize: vertical; }
 select option { background: #1a1a2e; }
 
-/* ===== BUTTONS MODERN ===== */
+/* ===== BUTTONS ===== */
 .btn {
   padding: 10px 18px;
   border: 0;
@@ -431,9 +493,8 @@ select option { background: #1a1a2e; }
 .btn-sm { padding: 5px 12px; font-size: 10px; border-radius: var(--radius-sm); }
 .btn-full { width: 100%; }
 .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-.btn-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
 
-/* ===== TABS MODERN ===== */
+/* ===== TABS ===== */
 .tabs {
   display: flex;
   gap: 3px;
@@ -479,301 +540,6 @@ select option { background: #1a1a2e; }
 .tab-btn.premium-tab { color: #f59e0b; }
 .tab-btn.premium-tab.active { background: rgba(245,158,11,0.1); color: #fbbf24; }
 .tab-btn.premium-tab.active::after { background: var(--gradient-gold); }
-
-/* ============================================================
-   CHAT MODERN - GLASSMORPHISM STYLE
-   ============================================================ */
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 420px;
-  overflow-y: auto;
-  padding: 4px 4px 4px 0;
-  scroll-behavior: smooth;
-}
-
-.chat-bubble {
-  display: flex;
-  gap: 10px;
-  max-width: 88%;
-  animation: chatSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.chat-bubble.user { align-self: flex-end; flex-direction: row-reverse; }
-.chat-bubble.ai { align-self: flex-start; }
-.chat-bubble.welcome { max-width: 100%; }
-
-@keyframes chatSlideIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.chat-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  flex-shrink: 0;
-  margin-top: 2px;
-  transition: var(--transition);
-}
-.chat-avatar.user {
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  box-shadow: 0 4px 12px rgba(59,130,246,0.2);
-}
-.chat-avatar.ai {
-  background: var(--gradient-primary);
-  box-shadow: 0 4px 12px rgba(109,124,255,0.2);
-}
-.chat-bubble:hover .chat-avatar { transform: scale(1.05); }
-
-.chat-content { flex: 1; min-width: 0; }
-.chat-bubble.user .chat-content { text-align: right; }
-.chat-bubble.ai .chat-content { text-align: left; }
-
-.chat-text {
-  padding: 10px 16px;
-  border-radius: 16px;
-  font-size: 13px;
-  line-height: 1.6;
-  word-wrap: break-word;
-  position: relative;
-}
-.chat-bubble.user .chat-text {
-  background: linear-gradient(135deg, rgba(41,54,95,0.9), rgba(30,45,74,0.9));
-  border-bottom-right-radius: 4px;
-  color: #e8edff;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.04);
-}
-.chat-bubble.ai .chat-text {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-bottom-left-radius: 4px;
-  color: #e8edff;
-  backdrop-filter: blur(10px);
-}
-.chat-bubble.welcome .chat-text {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: var(--radius-lg);
-  padding: 20px 24px;
-  text-align: center;
-}
-.chat-bubble.welcome .chat-text h2 {
-  font-size: 18px;
-  margin-bottom: 4px;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.chat-bubble.welcome .chat-text p { color: var(--text-secondary); margin: 2px 0; }
-
-/* Level colors */
-.chat-bubble.ai.level-sd .chat-text {
-  background: linear-gradient(135deg, rgba(13,40,24,0.9), rgba(26,61,42,0.9));
-  border: 2px solid rgba(16,185,129,0.3);
-  border-left: 4px solid #10b981;
-}
-.chat-bubble.ai.level-smp .chat-text {
-  background: linear-gradient(135deg, rgba(13,27,61,0.9), rgba(26,45,90,0.9));
-  border: 2px solid rgba(59,130,246,0.3);
-  border-left: 4px solid #3b82f6;
-}
-.chat-bubble.ai.level-sma .chat-text {
-  background: linear-gradient(135deg, rgba(61,31,13,0.9), rgba(90,48,26,0.9));
-  border: 2px solid rgba(245,158,11,0.3);
-  border-left: 4px solid #f59e0b;
-}
-.chat-bubble.ai.level-mahasiswa .chat-text {
-  background: linear-gradient(135deg, rgba(29,13,61,0.9), rgba(45,26,90,0.9));
-  border: 2px solid rgba(139,92,246,0.3);
-  border-left: 4px solid #8b5cf6;
-}
-.chat-bubble.ai.level-umum .chat-text {
-  background: linear-gradient(135deg, rgba(29,29,42,0.9), rgba(45,45,64,0.9));
-  border: 2px solid rgba(107,114,128,0.3);
-  border-left: 4px solid #6b7280;
-}
-.chat-bubble.ai.level-sd .chat-text h2,
-.chat-bubble.ai.level-sd .chat-text h3,
-.chat-bubble.ai.level-sd .chat-text strong { color: #34d399; }
-.chat-bubble.ai.level-smp .chat-text h2,
-.chat-bubble.ai.level-smp .chat-text h3,
-.chat-bubble.ai.level-smp .chat-text strong { color: #60a5fa; }
-.chat-bubble.ai.level-sma .chat-text h2,
-.chat-bubble.ai.level-sma .chat-text h3,
-.chat-bubble.ai.level-sma .chat-text strong { color: #fbbf24; }
-.chat-bubble.ai.level-mahasiswa .chat-text h2,
-.chat-bubble.ai.level-mahasiswa .chat-text h3,
-.chat-bubble.ai.level-mahasiswa .chat-text strong { color: #a78bfa; }
-.chat-bubble.ai.level-umum .chat-text h2,
-.chat-bubble.ai.level-umum .chat-text h3,
-.chat-bubble.ai.level-umum .chat-text strong { color: #9ca3af; }
-
-.chat-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 9px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  padding: 0 4px;
-}
-.chat-bubble.user .chat-meta { justify-content: flex-end; }
-.chat-bubble.ai .chat-meta { justify-content: flex-start; }
-
-.chat-actions {
-  display: flex;
-  gap: 3px;
-  flex-wrap: wrap;
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-}
-.chat-actions .btn {
-  font-size: 9px;
-  padding: 3px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.04);
-  color: var(--text-muted);
-}
-.chat-actions .btn:hover {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-.chat-bubble.loading .chat-text {
-  background: rgba(255,255,255,0.04);
-  padding: 14px 20px;
-  border: 1px solid rgba(255,255,255,0.04);
-}
-.loading-dots {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.loading-dots span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--gradient-primary);
-  animation: dotBounce 1.4s infinite;
-}
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-.loading-dots .load-text {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-left: 6px;
-}
-@keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-  40% { transform: scale(1); opacity: 1; }
-}
-
-/* ===== CHAT INPUT MODERN ===== */
-.chat-input-area {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: var(--radius-md);
-  padding: 3px;
-  transition: var(--transition);
-}
-.chat-input-area:focus-within {
-  border-color: rgba(109,124,255,0.2);
-  box-shadow: 0 0 0 3px rgba(109,124,255,0.04);
-}
-.chat-input-area input {
-  flex: 1;
-  padding: 9px 14px;
-  background: transparent;
-  border: 0;
-  color: #fff;
-  font-size: 13px;
-  outline: none;
-}
-.chat-input-area input::placeholder { color: var(--text-muted); }
-.chat-input-area button {
-  padding: 9px 18px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: var(--gradient-primary);
-  color: #fff;
-  font-weight: 700;
-  font-size: 12px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.chat-input-area button:hover { transform: scale(1.03); }
-
-/* ===== STATUS ===== */
-.status {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 6px;
-  min-height: 18px;
-}
-.status.ok { color: #35d38a; }
-.status.err { color: #ff6b7a; }
-.hidden { display: none !important; }
-
-/* ===== VOICE ===== */
-.voice-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 0;
-}
-.voice-btn {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  border: 0;
-  font-size: 28px;
-  background: var(--gradient-primary);
-  color: #fff;
-  box-shadow: var(--shadow-glow);
-  cursor: pointer;
-  transition: var(--transition);
-}
-.voice-btn:hover { transform: scale(1.05); }
-.voice-btn.listening {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  animation: pulse 1.5s infinite;
-}
-.voice-btn.processing {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  animation: pulse 1s infinite;
-}
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
-}
-.voice-status { font-size: 12px; color: var(--text-secondary); }
-.voice-text {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: var(--radius-md);
-  padding: 10px;
-  width: 100%;
-  text-align: center;
-  color: #fff;
-  font-size: 13px;
-  min-height: 44px;
-}
-.voice-text.listening { border-color: rgba(239,68,68,0.3); }
-.voice-text.processing { border-color: rgba(245,158,11,0.3); }
 
 /* ============================================================
    QUIZ MODERN
@@ -873,9 +639,289 @@ select option { background: #1a1a2e; }
 }
 .quiz-wrong-review .wrong-item .correct-answer { color: #35d38a; font-weight: 700; }
 
-/* ============================================================
-   GAME MODERN
-   ============================================================ */
+.daily-challenge {
+  background: rgba(245,158,11,0.04);
+  border: 1px solid rgba(245,158,11,0.08);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.daily-challenge .challenge-icon { font-size: 24px; }
+.daily-challenge .challenge-info { flex: 1; }
+.daily-challenge .challenge-info .title { font-weight: 700; color: #fbbf24; font-size: 13px; }
+.daily-challenge .challenge-info .desc { font-size: 11px; color: var(--text-secondary); }
+.daily-challenge .challenge-progress {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 3px solid rgba(245,158,11,0.1);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #fbbf24;
+  font-size: 13px;
+}
+
+/* ===== CHAT STYLES (disederhanakan) ===== */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 4px 4px 4px 0;
+  scroll-behavior: smooth;
+}
+.chat-bubble {
+  display: flex;
+  gap: 10px;
+  max-width: 88%;
+  animation: chatSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.chat-bubble.user { align-self: flex-end; flex-direction: row-reverse; }
+.chat-bubble.ai { align-self: flex-start; }
+.chat-bubble.welcome { max-width: 100%; }
+
+@keyframes chatSlideIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.chat-avatar.user { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+.chat-avatar.ai { background: var(--gradient-primary); }
+.chat-content { flex: 1; min-width: 0; }
+.chat-bubble.user .chat-content { text-align: right; }
+.chat-bubble.ai .chat-content { text-align: left; }
+
+.chat-text {
+  padding: 10px 16px;
+  border-radius: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+.chat-bubble.user .chat-text {
+  background: linear-gradient(135deg, rgba(41,54,95,0.9), rgba(30,45,74,0.9));
+  border-bottom-right-radius: 4px;
+  color: #e8edff;
+}
+.chat-bubble.ai .chat-text {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-bottom-left-radius: 4px;
+  color: #e8edff;
+}
+.chat-bubble.welcome .chat-text {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  text-align: center;
+}
+.chat-bubble.welcome .chat-text h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.chat-bubble.welcome .chat-text p { color: var(--text-secondary); }
+
+.chat-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+.chat-bubble.user .chat-meta { justify-content: flex-end; }
+.chat-bubble.ai .chat-meta { justify-content: flex-start; }
+
+.chat-actions {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.chat-actions .btn {
+  font-size: 9px;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-muted);
+}
+.chat-actions .btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  transition: var(--transition);
+}
+.chat-input-area:focus-within {
+  border-color: rgba(109,124,255,0.2);
+  box-shadow: 0 0 0 3px rgba(109,124,255,0.04);
+}
+.chat-input-area input {
+  flex: 1;
+  padding: 9px 14px;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+}
+.chat-input-area input::placeholder { color: var(--text-muted); }
+.chat-input-area button {
+  padding: 9px 18px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.chat-input-area button:hover { transform: scale(1.03); }
+
+.loading-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  animation: dotBounce 1.4s infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+.loading-dots .load-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.status {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  min-height: 18px;
+}
+.status.ok { color: #35d38a; }
+.status.err { color: #ff6b7a; }
+.hidden { display: none !important; }
+
+/* ===== VOICE ===== */
+.voice-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.voice-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 0;
+  font-size: 28px;
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.voice-btn:hover { transform: scale(1.05); }
+.voice-btn.listening {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  animation: pulse 1.5s infinite;
+}
+.voice-btn.processing {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+.voice-status { font-size: 12px; color: var(--text-secondary); }
+.voice-text {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 13px;
+  min-height: 44px;
+}
+
+/* ===== OTHER COMPONENTS ===== */
+.lesson-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin: 6px 0;
+}
+.answer-box {
+  border-left: 3px solid #35d38a;
+  background: rgba(53,211,138,0.04);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 6px;
+}
+.ai-content h2 { font-size: 18px; margin: 2px 0 10px; }
+.ai-content h3 { font-size: 14px; margin: 12px 0 4px; }
+.ai-content p { margin: 4px 0; }
+.ai-content ul, .ai-content ol { margin: 4px 0 8px; padding-left: 18px; }
+.ai-content li { margin: 2px 0; }
+.ai-content strong { color: #fff; }
+
+.footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 10px;
+  padding: 28px 0 10px;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  margin-top: 16px;
+}
+
+/* ===== GAME STYLES (disederhanakan) ===== */
 .game-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -893,23 +939,13 @@ select option { background: #1a1a2e; }
   position: relative;
   overflow: hidden;
 }
-.game-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-secondary);
-  opacity: 0;
-  transition: var(--transition);
-}
-.game-card:hover::before { opacity: 0.04; }
 .game-card:hover {
   transform: translateY(-4px);
   border-color: rgba(139,92,246,0.15);
-  box-shadow: 0 8px 30px rgba(139,92,246,0.05);
 }
-.game-card .game-icon { font-size: 32px; display: block; margin-bottom: 4px; position: relative; z-index: 1; }
-.game-card .game-name { font-weight: 700; font-size: 13px; position: relative; z-index: 1; }
-.game-card .game-desc { font-size: 10px; color: var(--text-muted); margin-top: 1px; position: relative; z-index: 1; }
+.game-card .game-icon { font-size: 32px; display: block; margin-bottom: 4px; }
+.game-card .game-name { font-weight: 700; font-size: 13px; }
+.game-card .game-desc { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 .game-card .game-badge {
   position: absolute;
   top: 6px;
@@ -920,7 +956,6 @@ select option { background: #1a1a2e; }
   border-radius: var(--radius-full);
   background: var(--gradient-premium);
   color: #fff;
-  z-index: 1;
 }
 .game-card .game-stats {
   display: flex;
@@ -929,8 +964,6 @@ select option { background: #1a1a2e; }
   margin-top: 6px;
   font-size: 9px;
   color: var(--text-muted);
-  position: relative;
-  z-index: 1;
 }
 
 .flashcard-container {
@@ -955,9 +988,8 @@ select option { background: #1a1a2e; }
   position: relative;
   perspective: 1000px;
 }
-.flashcard.flipped { border-color: rgba(109,124,255,0.2); background: rgba(109,124,255,0.04); }
-.flashcard .front,
-.flashcard .back {
+.flashcard.flipped { border-color: rgba(109,124,255,0.2); }
+.flashcard .front, .flashcard .back {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -971,10 +1003,7 @@ select option { background: #1a1a2e; }
   font-weight: 600;
   text-align: center;
 }
-.flashcard .back {
-  transform: rotateY(180deg);
-  color: #a78bfa;
-}
+.flashcard .back { transform: rotateY(180deg); color: #a78bfa; }
 .flashcard.flipped .front { transform: rotateY(180deg); }
 .flashcard.flipped .back { transform: rotateY(0); }
 .flashcard .card-number {
@@ -1017,6 +1046,11 @@ select option { background: #1a1a2e; }
   border-color: rgba(255,107,122,0.3);
   background: rgba(255,107,122,0.06);
   animation: shake 0.4s;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
 }
 
 .memory-grid {
@@ -1124,9 +1158,7 @@ select option { background: #1a1a2e; }
   margin-top: 4px;
 }
 
-/* ============================================================
-   PREMIUM FEATURES MODERN
-   ============================================================ */
+/* ===== PREMIUM ===== */
 .leaderboard-item {
   display: flex;
   align-items: center;
@@ -1148,7 +1180,6 @@ select option { background: #1a1a2e; }
 .leaderboard-item .rank.top3 { color: #cd7f32; }
 .leaderboard-item .user-info { flex: 1; }
 .leaderboard-item .user-info .name { font-weight: 600; font-size: 12px; }
-.leaderboard-item .user-info .detail { font-size: 9px; color: var(--text-muted); }
 .leaderboard-item .score { font-weight: 700; color: #6d7cff; font-size: 13px; }
 
 .certificate-preview {
@@ -1158,7 +1189,6 @@ select option { background: #1a1a2e; }
   padding: 24px;
   text-align: center;
   margin-top: 10px;
-  backdrop-filter: blur(10px);
 }
 .certificate-preview .cert-title {
   font-size: 20px;
@@ -1166,7 +1196,6 @@ select option { background: #1a1a2e; }
   background: var(--gradient-gold);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 .certificate-preview .cert-name {
   font-size: 16px;
@@ -1178,70 +1207,6 @@ select option { background: #1a1a2e; }
   font-size: 12px;
   color: var(--text-secondary);
   margin-top: 2px;
-}
-
-.daily-challenge {
-  background: rgba(245,158,11,0.04);
-  border: 1px solid rgba(245,158,11,0.08);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-.daily-challenge .challenge-icon { font-size: 24px; }
-.daily-challenge .challenge-info { flex: 1; }
-.daily-challenge .challenge-info .title { font-weight: 700; color: #fbbf24; font-size: 13px; }
-.daily-challenge .challenge-info .desc { font-size: 11px; color: var(--text-secondary); }
-.daily-challenge .challenge-progress {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 3px solid rgba(245,158,11,0.1);
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  color: #fbbf24;
-  font-size: 13px;
-}
-
-/* ============================================================
-   OTHER COMPONENTS
-   ============================================================ */
-.lesson-box {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  margin: 6px 0;
-}
-.answer-box {
-  border-left: 3px solid #35d38a;
-  background: rgba(53,211,138,0.04);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  margin-top: 6px;
-}
-.ai-content h2 { font-size: 18px; margin: 2px 0 10px; }
-.ai-content h3 { font-size: 14px; margin: 12px 0 4px; }
-.ai-content p { margin: 4px 0; }
-.ai-content ul, .ai-content ol { margin: 4px 0 8px; padding-left: 18px; }
-.ai-content li { margin: 2px 0; }
-.ai-content strong { color: #fff; }
-.ai-content code {
-  background: rgba(255,255,255,0.04);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-.ai-content blockquote {
-  margin: 6px 0;
-  padding: 8px 12px;
-  border-left: 3px solid #6d7cff;
-  background: rgba(255,255,255,0.03);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
 }
 
 .note-card {
@@ -1274,7 +1239,6 @@ select option { background: #1a1a2e; }
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 .stat-box .stat-label { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
 
@@ -1337,7 +1301,6 @@ select option { background: #1a1a2e; }
   place-items: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: var(--transition);
 }
 .plan-item .plan-check.done { background: #35d38a; border-color: #35d38a; }
 .plan-item .plan-check.done::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
@@ -1403,19 +1366,7 @@ select option { background: #1a1a2e; }
 }
 .topic-btn .emoji { font-size: 16px; }
 
-/* ===== FOOTER ===== */
-.footer {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 10px;
-  padding: 28px 0 10px;
-  border-top: 1px solid rgba(255,255,255,0.03);
-  margin-top: 16px;
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .app { padding: 0 14px 24px; }
   .hero h2 { font-size: 24px; }
@@ -1423,7 +1374,6 @@ select option { background: #1a1a2e; }
   .quick { padding: 10px; }
   .quick .emoji { font-size: 18px; }
   .btn-row { grid-template-columns: 1fr; }
-  .btn-row-3 { grid-template-columns: 1fr; }
   .game-grid { grid-template-columns: 1fr; }
   .matching-grid { grid-template-columns: 1fr; }
   .trivia-options { grid-template-columns: 1fr; }
@@ -1435,7 +1385,6 @@ select option { background: #1a1a2e; }
   .chat-bubble { max-width: 100%; }
   .chat-avatar { width: 26px; height: 26px; font-size: 12px; }
   .chat-text { font-size: 12px; padding: 8px 12px; }
-  .chat-meta { font-size: 8px; }
   .card { padding: 14px 16px; }
   .points-card .points { font-size: 20px; }
   .flashcard .front, .flashcard .back { font-size: 14px; }
@@ -1449,9 +1398,6 @@ select option { background: #1a1a2e; }
   .chat-input-area input { font-size: 12px; padding: 6px 10px; }
   .chat-input-area button { font-size: 11px; padding: 6px 12px; }
   .memory-grid { grid-template-columns: repeat(3, 1fr); }
-  .wordsearch-grid { grid-template-columns: repeat(5, 1fr); }
-  .wordsearch-cell { font-size: 13px; }
-  .game-card .game-icon { font-size: 26px; }
 }
 </style>
 </head>
@@ -1821,11 +1767,8 @@ select option { background: #1a1a2e; }
 
 <script>
 // ============================================================
-// ============ JAVASCRIPT - SAMA SEPERTI SEBELUMNYA ============
-// ============ (DIPERBAIKI UNTUK KOMPATIBILITAS) ============
+// ============ KONFIGURASI ============
 // ============================================================
-
-// ===== KONFIGURASI =====
 const KEY_STORE = "studyai_groq_key_v2";
 const NOTES_STORE = "studyai_notes";
 const PROGRESS_STORE = "studyai_progress";
@@ -1846,6 +1789,7 @@ let currentResultTopic = '';
 let quizTimer = null, timeLeft = 30;
 let quizDifficulty = 'medium';
 let wrongAnswersList = [];
+let timerActive = false;
 
 // ===== GAME VARIABLES =====
 let gameState = {
@@ -1866,7 +1810,9 @@ let gameState = {
   isGameActive: false
 };
 
-// ===== LEVEL =====
+// ============================================================
+// ============ LEVEL ============
+// ============================================================
 const LEVEL_CONFIG = {
   'SD': { class: 'level-sd', label: 'SD' },
   'SMP': { class: 'level-smp', label: 'SMP' },
@@ -1899,7 +1845,9 @@ function getLevelDescription(l){
 
 function getActiveLevel(t){return detectLevel(t)}
 
-// ===== API KEY =====
+// ============================================================
+// ============ API KEY ============
+// ============================================================
 let API_KEY = localStorage.getItem(KEY_STORE)||'';
 
 function loadConfigKey(){
@@ -1921,7 +1869,9 @@ function saveUserKey(){const k=$("apiKey").value.trim();if(!k){$("keyStatus").te
 function removeUserKey(){localStorage.removeItem(KEY_STORE);API_KEY='';$("apiKey").value="";$("keyStatus").textContent="🗑️ API Key dihapus";$("keyStatus").className="status";loadConfigKey()}
 function getKey(){if(API_KEY)return API_KEY;const k=$("apiKey").value.trim()||localStorage.getItem(KEY_STORE)||"";if(k){API_KEY=k;return k}if(typeof CONFIG!=='undefined'&&CONFIG.GROQ_API_KEY){API_KEY=CONFIG.GROQ_API_KEY;return API_KEY}$("settings").classList.remove("hidden");$("keyStatus").textContent="⚠️ Masukkan API Key";$("keyStatus").className="status err";$("apiKey").focus();return""}
 
-// ===== CHAT FUNCTIONS =====
+// ============================================================
+// ============ CHAT FUNCTIONS (disederhanakan) ============
+// ============================================================
 function escapeHtml(s){if(!s)return'';return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 
 function renderAI(raw){
@@ -2012,7 +1962,9 @@ function copyChatText(btn){
 }
 function fallbackCopy(txt,btn){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');btn.textContent='✅ Tersalin';setTimeout(()=>btn.textContent='📋 Salin',1500)}catch(e){alert('Tidak dapat menyalin.')}document.body.removeChild(ta)}
 
-// ===== AUTO-SUMMARY =====
+// ============================================================
+// ============ AUTO-SUMMARY ============
+// ============================================================
 function autoSummary(){
   const container=document.getElementById('chatContainer');
   const messages=container.querySelectorAll('.chat-bubble.ai .chat-text');
@@ -2036,7 +1988,9 @@ function autoSummary(){
   }, 800);
 }
 
-// ===== TAB FUNCTIONS =====
+// ============================================================
+// ============ TAB FUNCTIONS ============
+// ============================================================
 function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   const tabs=['learn','materi','chat','voice','quiz','games','notes','progress','plan','achievements','reminder','premium'];
@@ -2066,7 +2020,9 @@ function quickAsk(topic,prompt){
   switchTab('learn');
 }
 
-// ===== ASK LEARN =====
+// ============================================================
+// ============ ASK LEARN ============
+// ============================================================
 async function askLearn(mode){
   const key=getKey();if(!key)return;
   const topic=document.getElementById('topic').value.trim(),q=document.getElementById('question').value.trim();
@@ -2134,7 +2090,9 @@ function askFollowUp(btn){
   document.getElementById('resultStatus').textContent="💡 Tulis pertanyaan lanjutanmu...";document.getElementById('resultStatus').className="status";
 }
 
-// ===== SPEECH =====
+// ============================================================
+// ============ SPEECH ============
+// ============================================================
 function speakText(text){
   if(!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
@@ -2229,7 +2187,9 @@ function clearVoiceChat(){
   }
 }
 
-// ===== CHAT =====
+// ============================================================
+// ============ CHAT ============
+// ============================================================
 async function sendChat(){
   const key=getKey();if(!key)return;
   const input=document.getElementById('chatInput'),msg=input.value.trim();
@@ -2263,7 +2223,9 @@ function clearChatHistory(){
   }
 }
 
-// ===== MATERI =====
+// ============================================================
+// ============ MATERI ============
+// ============================================================
 const MATERI_DATA={
   'Matematika':{icon:'📐',topics:[{name:'Aljabar Dasar',emoji:'🔢',prompt:'Jelaskan aljabar dasar dengan contoh persamaan linear'},{name:'Persamaan Kuadrat',emoji:'📈',prompt:'Jelaskan persamaan kuadrat dengan rumus ABC dan contoh'},{name:'Trigonometri',emoji:'📐',prompt:'Jelaskan trigonometri dasar (sin, cos, tan) dengan contoh'},{name:'Logaritma',emoji:'📊',prompt:'Jelaskan logaritma dengan sifat-sifat dan contoh'},{name:'Statistika Dasar',emoji:'📊',prompt:'Jelaskan statistika dasar (mean, median, modus, standar deviasi)'},{name:'Kalkulus Dasar',emoji:'∫',prompt:'Jelaskan kalkulus dasar (turunan dan integral) dengan contoh'}]},
   'Fisika':{icon:'⚛️',topics:[{name:'Gerak Lurus',emoji:'🏃',prompt:'Jelaskan gerak lurus beraturan dan berubah beraturan dengan contoh'},{name:'Hukum Newton',emoji:'🍎',prompt:'Jelaskan Hukum Newton 1,2,3 dengan contoh kehidupan sehari-hari'},{name:'Energi & Usaha',emoji:'⚡',prompt:'Jelaskan energi dan usaha dengan contoh'},{name:'Listrik Dasar',emoji:'💡',prompt:'Jelaskan listrik dasar (arus, tegangan, hambatan) dengan rumus'},{name:'Gelombang',emoji:'🌊',prompt:'Jelaskan gelombang dan sifat-sifatnya dengan contoh'}]},
@@ -2302,7 +2264,9 @@ function learnTopic(s,t,p){
   resetResultChat();switchTab('learn');
 }
 
-// ===== QUIZ =====
+// ============================================================
+// ============ QUIZ - DIPERBAIKI ============
+// ============================================================
 function setQuizDifficulty(diff){
   quizDifficulty=diff;
   document.querySelectorAll('#tabQuiz .btn-secondary, #tabQuiz .btn-primary').forEach(b=>{
@@ -2322,33 +2286,55 @@ function getTimeLimit(){
 }
 
 function startTimer(){
-  if(quizTimer)clearInterval(quizTimer);
-  timeLeft=getTimeLimit();
-  const timerDisplay=document.getElementById('quizTimerDisplay');
-  if(!timerDisplay)return;
-  timerDisplay.textContent='⏱️ '+timeLeft+' detik';
-  timerDisplay.className='quiz-timer';
-  quizTimer=setInterval(()=>{
+  // Cek apakah timer sudah berjalan
+  if(timerActive) return;
+  timerActive = true;
+  
+  if(quizTimer) clearInterval(quizTimer);
+  timeLeft = getTimeLimit();
+  
+  // Cari elemen timer display
+  const timerDisplay = document.getElementById('quizTimerDisplay');
+  if(!timerDisplay) {
+    timerActive = false;
+    return;
+  }
+  
+  timerDisplay.textContent = '⏱️ ' + timeLeft + ' detik';
+  timerDisplay.className = 'quiz-timer';
+  
+  quizTimer = setInterval(() => {
     timeLeft--;
-    timerDisplay.textContent='⏱️ '+timeLeft+' detik';
-    if(timeLeft<=5)timerDisplay.classList.add('warning');
-    if(timeLeft<=0){
+    if(timerDisplay) {
+      timerDisplay.textContent = '⏱️ ' + timeLeft + ' detik';
+      if(timeLeft <= 5) timerDisplay.classList.add('warning');
+    }
+    if(timeLeft <= 0) {
       clearInterval(quizTimer);
-      document.getElementById('quizStatus').textContent="⏰ Waktu habis!";
-      document.getElementById('quizStatus').className="status err";
+      quizTimer = null;
+      timerActive = false;
+      document.getElementById('quizStatus').textContent = "⏰ Waktu habis!";
+      document.getElementById('quizStatus').className = "status err";
       submitQuiz();
     }
-  },1000);
+  }, 1000);
 }
 
 async function generateQuiz(){
   const key=getKey();if(!key)return;
   const topic=document.getElementById('quizTopic').value.trim();
   if(!topic){document.getElementById('quizStatus').textContent="⚠️ Masukkan topik kuis.";document.getElementById('quizStatus').className="status err";return}
+  
+  // Reset timer state
+  if(quizTimer) clearInterval(quizTimer);
+  quizTimer = null;
+  timerActive = false;
+  
   const level=getActiveLevel(topic),model=document.getElementById('model').value;
   const qCount=getQuestionsCount();
   document.getElementById('quizStatus').textContent=`⏳ AI membuat ${qCount} soal...`;document.getElementById('quizStatus').className="status";
   document.getElementById('quizContainer').innerHTML='<div class="loading" style="justify-content:center;padding:20px"><span>🤖</span><span>Membuat soal</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+  
   try{
     const resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{
       method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
@@ -2364,7 +2350,8 @@ async function generateQuiz(){
     quizData=parsed.questions;quizAnswered=false;wrongAnswersList=[];
     renderQuiz(quizData);
     document.getElementById('quizStatus').textContent=`✅ ${quizData.length} soal berhasil dibuat`;document.getElementById('quizStatus').className="status ok";
-    startTimer();
+    // Timer akan mulai otomatis saat soal dirender
+    setTimeout(() => startTimer(), 300);
     updateDailyChallenge();
   }catch(err){
     document.getElementById('quizContainer').innerHTML=`<div class="lesson-box" style="text-align:center;padding:20px;border-color:#ff6b7a"><p style="color:#ff6b7a">❌ ${escapeHtml(err.message)}</p><button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="generateQuiz()">🔄 Coba Lagi</button></div>`;
@@ -2386,11 +2373,25 @@ function renderQuiz(qs){
   c.innerHTML=html;
 }
 
-function selectAnswer(qi,oi){if(quizAnswered)return;const labels=document.querySelectorAll(`#options${qi} label`);labels.forEach((l,idx)=>{const r=l.querySelector('input[type="radio"]');r.checked=(idx===oi)})}
+function selectAnswer(qi,oi){
+  if(quizAnswered)return;
+  const labels=document.querySelectorAll(`#options${qi} label`);
+  labels.forEach((l,idx)=>{
+    const r=l.querySelector('input[type="radio"]');
+    if(r) r.checked=(idx===oi);
+  });
+}
 
 function submitQuiz(){
   if(!quizData||quizAnswered)return;
-  if(quizTimer)clearInterval(quizTimer);
+  
+  // Stop timer
+  if(quizTimer){
+    clearInterval(quizTimer);
+    quizTimer = null;
+    timerActive = false;
+  }
+  
   const qs=quizData;let correct=0,total=qs.length,allAnswered=true;
   const wrongQuestions=[];
   qs.forEach((q,i)=>{
@@ -2401,7 +2402,9 @@ function submitQuiz(){
     else {wrongQuestions.push({question:q.question,correct:q.correct,options:q.options,userAnswer:val})}
     const labels=document.querySelectorAll(`#options${i} label`);
     labels.forEach((l,idx)=>{
-      l.classList.add('disabled');const r=l.querySelector('input[type="radio"]');r.disabled=true;
+      l.classList.add('disabled');
+      const r=l.querySelector('input[type="radio"]');
+      if(r) r.disabled=true;
       if(idx===q.correct)l.classList.add('correct');
       else if(idx===val&&!isCorrect)l.classList.add('wrong');
     });
@@ -2428,16 +2431,36 @@ function submitQuiz(){
 function showAnswerKeys(){
   if(!quizData)return;
   let html='<div class="lesson-box" style="margin-top:10px"><strong>🔑 Kunci Jawaban:</strong><br>';
-  quizData.forEach((q,i)=>{const labels=['A','B','C','D'];html+=`<div style="margin-top:4px;font-size:12px"><strong>${i+1}.</strong> ${escapeHtml(q.question)}<br><span style="color:#35d38a">✓ Jawaban: ${labels[q.correct]}. ${escapeHtml(q.options[q.correct])}</span></div>`});
+  quizData.forEach((q,i)=>{
+    const labels=['A','B','C','D'];
+    html+=`<div style="margin-top:4px;font-size:12px"><strong>${i+1}.</strong> ${escapeHtml(q.question)}<br><span style="color:#35d38a">✓ Jawaban: ${labels[q.correct]}. ${escapeHtml(q.options[q.correct])}</span></div>`;
+  });
   html+='</div>';
-  const c=$('quizContainer');const old=c.querySelector('.lesson-box:last-child');
-  if(old&&old.textContent.includes('Kunci Jawaban'))old.remove();
+  const c=$('quizContainer');
+  const old=c.querySelector('.lesson-box:last-child');
+  if(old && old.textContent.includes('Kunci Jawaban')) old.remove();
   c.querySelector('.quiz-result').insertAdjacentHTML('afterend',html);
 }
 
-function resetQuiz(){if(quizTimer)clearInterval(quizTimer);quizData=null;quizAnswered=false;wrongAnswersList=[];$('quizContainer').innerHTML=`<div class="lesson-box" style="text-align:center;padding:20px"><p style="font-size:13px;margin:0">Masukkan topik dan klik <strong>🎯 Buat Kuis</strong> untuk memulai.</p></div>`;$('quizStatus').textContent="";$('quizStatus').className="status";$('quizTopic').focus()}
+function resetQuiz(){
+  // Stop timer
+  if(quizTimer){
+    clearInterval(quizTimer);
+    quizTimer = null;
+    timerActive = false;
+  }
+  quizData=null;
+  quizAnswered=false;
+  wrongAnswersList=[];
+  document.getElementById('quizContainer').innerHTML=`<div class="lesson-box" style="text-align:center;padding:20px"><p style="font-size:13px;margin:0">Masukkan topik dan klik <strong>🎯 Buat Kuis</strong> untuk memulai.</p></div>`;
+  document.getElementById('quizStatus').textContent="";
+  document.getElementById('quizStatus').className="status";
+  document.getElementById('quizTopic').focus();
+}
 
-// ===== QUIZ HISTORY =====
+// ============================================================
+// ============ QUIZ HISTORY ============
+// ============================================================
 function getQuizHistory(){try{return JSON.parse(localStorage.getItem(QUIZ_HISTORY_STORE))||[]}catch(e){return[]}}
 function saveQuizHistory(topic,score,total){
   const h=getQuizHistory();
@@ -2445,7 +2468,9 @@ function saveQuizHistory(topic,score,total){
   localStorage.setItem(QUIZ_HISTORY_STORE,JSON.stringify(h));
 }
 
-// ===== WRONG ANSWERS =====
+// ============================================================
+// ============ WRONG ANSWERS ============
+// ============================================================
 function getWrongAnswers(){try{return JSON.parse(localStorage.getItem(WRONG_ANSWERS_STORE))||[]}catch(e){return[]}}
 function saveWrongAnswers(answers){
   const existing=getWrongAnswers();
@@ -2466,7 +2491,9 @@ function showWrongAnswers(){
   `).join('');
 }
 
-// ===== PROGRESS CHART =====
+// ============================================================
+// ============ PROGRESS CHART ============
+// ============================================================
 let chartInstance=null;
 
 function renderProgressChart(){
@@ -2475,7 +2502,8 @@ function renderProgressChart(){
   const history=getQuizHistory();
   if(history.length===0){
     if(chartInstance){chartInstance.destroy();chartInstance=null}
-    ctx.parentElement.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:20px;font-size:12px">Belum ada data kuis. Kerjakan kuis untuk melihat progres!</div>';
+    const parent=ctx.parentElement;
+    if(parent) parent.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:20px;font-size:12px">Belum ada data kuis. Kerjakan kuis untuk melihat progres!</div>';
     return;
   }
   const labels=history.slice(-10).map(h=>h.date.substring(0,10));
@@ -2488,7 +2516,9 @@ function renderProgressChart(){
   });
 }
 
-// ===== ADAPTIVE LEARNING =====
+// ============================================================
+// ============ ADAPTIVE LEARNING ============
+// ============================================================
 function updateAdaptiveRecommendations(){
   const container=document.getElementById('adaptiveRecommendations');
   const history=getQuizHistory();
@@ -2510,7 +2540,9 @@ function updateAdaptiveRecommendations(){
   }
 }
 
-// ===== STREAK =====
+// ============================================================
+// ============ STREAK ============
+// ============================================================
 function getStreak(){try{return JSON.parse(localStorage.getItem(STREAK_STORE))||{count:0,lastDate:null}}catch(e){return{count:0,lastDate:null}}}
 function saveStreak(s){localStorage.setItem(STREAK_STORE,JSON.stringify(s))}
 
@@ -2540,7 +2572,9 @@ function updateDailyChallenge(){
   }
 }
 
-// ===== LEADERBOARD =====
+// ============================================================
+// ============ LEADERBOARD ============
+// ============================================================
 function getLeaderboard(){try{return JSON.parse(localStorage.getItem(LEADERBOARD_STORE))||[]}catch(e){return[]}}
 function saveLeaderboard(lb){localStorage.setItem(LEADERBOARD_STORE,JSON.stringify(lb))}
 
@@ -2565,7 +2599,9 @@ function renderLeaderboard(){
   }).join('');
 }
 
-// ===== GAME STATS =====
+// ============================================================
+// ============ GAME STATS ============
+// ============================================================
 function getGameStats(){try{return JSON.parse(localStorage.getItem(GAME_STATS_STORE))||{flashcard:0,matching:0,memory:0,trivia:0}}catch(e){return{flashcard:0,matching:0,memory:0,trivia:0}}}
 function saveGameStats(stats){localStorage.setItem(GAME_STATS_STORE,JSON.stringify(stats))}
 
@@ -2578,7 +2614,9 @@ function updateGameStats(game,score){
   checkAchievements();
 }
 
-// ===== GAME FUNCTIONS =====
+// ============================================================
+// ============ GAME FUNCTIONS (disederhanakan) ============
+// ============================================================
 function resetGameUI(){
   const container=document.getElementById('gameContainer');
   container.innerHTML=`
@@ -2928,7 +2966,9 @@ function finishGame(gameType){
   gameState.isGameActive=false;
 }
 
-// ===== CERTIFICATE =====
+// ============================================================
+// ============ CERTIFICATE ============
+// ============================================================
 let certificateData=null;
 
 function generateCertificate(){
@@ -2965,7 +3005,9 @@ function downloadCertificate(){
   doc.save('sertifikat_studyai.pdf');
 }
 
-// ===== NOTES =====
+// ============================================================
+// ============ NOTES ============
+// ============================================================
 function loadNotes(){try{return JSON.parse(localStorage.getItem(NOTES_STORE))||[]}catch(e){return[]}}
 function saveNotes(n){localStorage.setItem(NOTES_STORE,JSON.stringify(n))}
 
@@ -3011,7 +3053,9 @@ function renderNotes(){
   c.innerHTML=n.map(x=>`<div class="note-card"><div class="note-title">${escapeHtml(x.title)}</div><div class="note-date">📅 ${x.date}</div><div class="note-preview">${escapeHtml(x.content)}</div><div style="margin-top:4px"><button class="btn btn-secondary btn-sm" onclick="deleteNote(${x.id})">🗑️ Hapus</button></div></div>`).join('');
 }
 
-// ===== PROGRESS =====
+// ============================================================
+// ============ PROGRESS ============
+// ============================================================
 let progressData=JSON.parse(localStorage.getItem(PROGRESS_STORE))||{questions:0,topics:[],level:'SMP',studyTime:0};
 
 function updateProgress(t,l){progressData.questions++;if(t&&!progressData.topics.includes(t))progressData.topics.push(t);progressData.level=l;localStorage.setItem(PROGRESS_STORE,JSON.stringify(progressData));updateProgressUI()}
@@ -3027,7 +3071,9 @@ function updateProgressUI(){
 }
 function resetProgress(){if(!confirm("Reset semua progress?"))return;progressData={questions:0,topics:[],level:'SMP',studyTime:0};localStorage.setItem(PROGRESS_STORE,JSON.stringify(progressData));updateProgressUI();$('chatStatus').textContent="✅ Progress direset";$('chatStatus').className="status ok"}
 
-// ===== PLAN =====
+// ============================================================
+// ============ PLAN ============
+// ============================================================
 function loadPlan(){try{return JSON.parse(localStorage.getItem(PLAN_STORE))||[]}catch(e){return[]}}
 function savePlan(p){localStorage.setItem(PLAN_STORE,JSON.stringify(p))}
 
@@ -3046,7 +3092,9 @@ function renderPlan(){
   c.innerHTML=p.map(x=>`<div class="plan-item"><div class="plan-check ${x.done?'done':''}" onclick="togglePlan(${x.id})"></div><div class="plan-text ${x.done?'done':''}">${escapeHtml(x.text)}</div><button class="btn btn-secondary btn-sm" onclick="deletePlan(${x.id})" style="font-size:8px;padding:2px 8px">✕</button></div>`).join('');
 }
 
-// ===== ACHIEVEMENTS =====
+// ============================================================
+// ============ ACHIEVEMENTS ============
+// ============================================================
 let userBadges=JSON.parse(localStorage.getItem(ACHIEVEMENT_STORE))||[];
 
 function renderAchievements(){
@@ -3094,7 +3142,9 @@ function checkAchievements(){
   $('badgeCount').textContent=userBadges.length+' Badge';
 }
 
-// ===== REMINDER =====
+// ============================================================
+// ============ REMINDER ============
+// ============================================================
 function loadReminders(){try{return JSON.parse(localStorage.getItem(REMINDER_STORE))||[]}catch(e){return[]}}
 function saveReminders(r){localStorage.setItem(REMINDER_STORE,JSON.stringify(r))}
 
@@ -3122,7 +3172,9 @@ function startReminderChecker(){
   },30000);
 }
 
-// ===== GAMIFICATION =====
+// ============================================================
+// ============ GAMIFICATION ============
+// ============================================================
 let userPoints=parseInt(localStorage.getItem(POINTS_STORE))||0;
 
 function updatePoints(p){userPoints+=p;localStorage.setItem(POINTS_STORE,userPoints);$('pointsValue').textContent=userPoints;updateLevelLabel();checkAchievements()}
@@ -3141,7 +3193,9 @@ function showNotification(title,msg){
   setTimeout(()=>{n.style.opacity='0';n.style.transition='opacity .5s';setTimeout(()=>n.remove(),500)},3000);
 }
 
-// ===== DARK MODE =====
+// ============================================================
+// ============ DARK MODE ============
+// ============================================================
 function toggleDarkMode(){
   document.body.classList.toggle('dark-mode');
   const btn=document.querySelector('.icon-btn[onclick="toggleDarkMode()"]');
@@ -3150,7 +3204,9 @@ function toggleDarkMode(){
 }
 if(localStorage.getItem(THEME_STORE)==='dark'){document.body.classList.add('dark-mode');document.querySelector('.icon-btn[onclick="toggleDarkMode()"]').textContent='☀️'}
 
-// ===== INIT =====
+// ============================================================
+// ============ INIT ============
+// ============================================================
 if(window.speechSynthesis){
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.getVoices()};
