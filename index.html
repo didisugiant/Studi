@@ -52,9 +52,176 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 .message.user{align-self:flex-end;background:#29365f;border-bottom-right-radius:5px}
 .message.ai{align-self:flex-start;background:#111c2e;border:1px solid #26344d;border-bottom-left-radius:5px;width:100%}
 .message.welcome{width:100%}
+
+/* ============ WARNA LEVEL PENDIDIKAN ============ */
+.message.ai.level-sd {
+  background: linear-gradient(135deg, #0d2818, #1a3d2a);
+  border: 2px solid #10b981;
+  border-left: 5px solid #10b981;
+}
+.message.ai.level-sd .ai-content h2,
+.message.ai.level-sd .ai-content h3,
+.message.ai.level-sd .ai-content strong {
+  color: #34d399;
+}
+
+.message.ai.level-smp {
+  background: linear-gradient(135deg, #0d1b3d, #1a2d5a);
+  border: 2px solid #3b82f6;
+  border-left: 5px solid #3b82f6;
+}
+.message.ai.level-smp .ai-content h2,
+.message.ai.level-smp .ai-content h3,
+.message.ai.level-smp .ai-content strong {
+  color: #60a5fa;
+}
+
+.message.ai.level-sma {
+  background: linear-gradient(135deg, #3d1f0d, #5a301a);
+  border: 2px solid #f59e0b;
+  border-left: 5px solid #f59e0b;
+}
+.message.ai.level-sma .ai-content h2,
+.message.ai.level-sma .ai-content h3,
+.message.ai.level-sma .ai-content strong {
+  color: #fbbf24;
+}
+
+.message.ai.level-mahasiswa {
+  background: linear-gradient(135deg, #1d0d3d, #2d1a5a);
+  border: 2px solid #8b5cf6;
+  border-left: 5px solid #8b5cf6;
+}
+.message.ai.level-mahasiswa .ai-content h2,
+.message.ai.level-mahasiswa .ai-content h3,
+.message.ai.level-mahasiswa .ai-content strong {
+  color: #a78bfa;
+}
+
+.message.ai.level-umum {
+  background: linear-gradient(135deg, #1d1d2a, #2d2d40);
+  border: 2px solid #6b7280;
+  border-left: 5px solid #6b7280;
+}
+.message.ai.level-umum .ai-content h2,
+.message.ai.level-umum .ai-content h3,
+.message.ai.level-umum .ai-content strong {
+  color: #9ca3af;
+}
+
+/* Level badge di dalam pesan */
+.level-badge {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 8px;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.level-badge.sd {
+  background: #10b981;
+  color: #fff;
+}
+.level-badge.smp {
+  background: #3b82f6;
+  color: #fff;
+}
+.level-badge.sma {
+  background: #f59e0b;
+  color: #000;
+}
+.level-badge.mahasiswa {
+  background: #8b5cf6;
+  color: #fff;
+}
+.level-badge.umum {
+  background: #6b7280;
+  color: #fff;
+}
+.level-badge.otomatis {
+  background: #6d7cff;
+  color: #fff;
+}
+
+.level-icon {
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+/* ============ LEVEL SELECTOR ============ */
+.level-selector {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 4px 0;
+}
+.level-option {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--line);
+  background: var(--surface3);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.level-option:hover {
+  transform: translateY(-2px);
+  border-color: #46547a;
+}
+.level-option.active-sd {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+.level-option.active-smp {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+.level-option.active-sma {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+.level-option.active-mahasiswa {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+}
+.level-option.active-umum {
+  border-color: #6b7280;
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+.level-option.active-otomatis {
+  border-color: #6d7cff;
+  background: rgba(109, 124, 255, 0.2);
+  color: #6d7cff;
+}
+.level-option .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.level-option .dot.sd { background: #10b981; }
+.level-option .dot.smp { background: #3b82f6; }
+.level-option .dot.sma { background: #f59e0b; }
+.level-option .dot.mahasiswa { background: #8b5cf6; }
+.level-option .dot.umum { background: #6b7280; }
+.level-option .dot.otomatis { background: #6d7cff; }
+
 .ai-content{overflow-wrap:anywhere}
 .ai-content h2{font-size:20px;margin:2px 0 13px;line-height:1.25}
-.ai-content h3{font-size:16px;margin:19px 0 8px;color:#fff}
+.ai-content h3{font-size:16px;margin:19px 0 8px}
 .ai-content h4{font-size:14px;margin:14px 0 7px}
 .ai-content p{margin:7px 0}
 .ai-content ul,.ai-content ol{margin:8px 0 10px;padding-left:22px}
@@ -133,14 +300,32 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 .materi-search input{flex:1;padding:8px 12px;background:var(--surface3);border:1px solid var(--line);border-radius:10px;color:#fff;font-size:13px;outline:none}
 .materi-search input:focus{border-color:var(--primary)}
 
-.level-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;margin-left:6px}
-.level-badge.sd{background:#10b981;color:#fff}
-.level-badge.smp{background:#3b82f6;color:#fff}
-.level-badge.sma{background:#f59e0b;color:#fff}
-.level-badge.univ{background:#8b5cf6;color:#fff}
+.level-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--surface3);
+  border: 1px solid var(--line);
+}
+.level-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.level-indicator .dot.sd { background: #10b981; }
+.level-indicator .dot.smp { background: #3b82f6; }
+.level-indicator .dot.sma { background: #f59e0b; }
+.level-indicator .dot.mahasiswa { background: #8b5cf6; }
+.level-indicator .dot.umum { background: #6b7280; }
+.level-indicator .dot.otomatis { background: #6d7cff; }
 
 @media(min-width:650px){.quick-grid{grid-template-columns:repeat(4,1fr)}.subject-grid{grid-template-columns:repeat(4,1fr)}main{padding-left:20px;padding-right:20px}}
-@media(max-width:480px){.settings-grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.hero h2{font-size:27px}.tabs{overflow-x:auto}}
+@media(max-width:480px){.settings-grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.hero h2{font-size:27px}.tabs{overflow-x:auto}.level-selector{gap:4px}.level-option{font-size:10px;padding:4px 10px}}
 </style>
 </head>
 <body>
@@ -178,10 +363,11 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
    </select>
   </div>
   <div>
-   <label>Deteksi Level Otomatis</label>
-   <div style="background:var(--surface3);border-radius:13px;padding:10px;font-size:12px;color:var(--muted)">
-    ✅ AI akan menyesuaikan penjelasan sesuai tingkat pemahamanmu secara otomatis
-   </div>
+   <label>Mode Level</label>
+   <select id="levelMode" onchange="toggleLevelMode()">
+    <option value="otomatis">🤖 Otomatis (Deteksi AI)</option>
+    <option value="manual">✋ Manual (Pilih Sendiri)</option>
+   </select>
   </div>
  </div>
  <div style="margin-top:10px">
@@ -207,6 +393,35 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 <!-- TAB BELAJAR -->
 <section id="tabLearn" class="card">
  <div class="card-title">📚 Mulai Belajar</div>
+ 
+ <!-- LEVEL SELECTOR -->
+ <div style="margin-bottom:10px">
+  <label>🎯 Pilih Level</label>
+  <div class="level-selector" id="levelSelector">
+   <button class="level-option" data-level="otomatis" onclick="selectLevel('otomatis')">
+    <span class="dot otomatis"></span> 🤖 Otomatis
+   </button>
+   <button class="level-option" data-level="sd" onclick="selectLevel('sd')">
+    <span class="dot sd"></span> 🟢 SD
+   </button>
+   <button class="level-option" data-level="smp" onclick="selectLevel('smp')">
+    <span class="dot smp"></span> 🔵 SMP
+   </button>
+   <button class="level-option" data-level="sma" onclick="selectLevel('sma')">
+    <span class="dot sma"></span> 🟡 SMA
+   </button>
+   <button class="level-option" data-level="mahasiswa" onclick="selectLevel('mahasiswa')">
+    <span class="dot mahasiswa"></span> 🟣 Mahasiswa
+   </button>
+   <button class="level-option" data-level="umum" onclick="selectLevel('umum')">
+    <span class="dot umum"></span> ⚪ Umum
+   </button>
+  </div>
+  <div id="levelStatus" style="font-size:11px;color:var(--muted);margin-top:4px">
+   🤖 Mode: Otomatis - AI akan mendeteksi level dari pertanyaan
+  </div>
+ </div>
+ 
  <label>Pelajaran / topik</label>
  <input id="topic" placeholder="Contoh: fotosintesis, integral, sejarah Indonesia...">
  <div style="margin-top:11px">
@@ -234,6 +449,31 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 <!-- TAB CHAT PRIBADI -->
 <section id="tabChat" class="card hidden">
  <div class="card-title">💬 Chat dengan Tutor AI Pribadi</div>
+ 
+ <!-- LEVEL SELECTOR untuk Chat -->
+ <div style="margin-bottom:10px">
+  <div class="level-selector" id="levelSelectorChat">
+   <button class="level-option" data-level="otomatis" onclick="selectLevelChat('otomatis')">
+    <span class="dot otomatis"></span> 🤖 Otomatis
+   </button>
+   <button class="level-option" data-level="sd" onclick="selectLevelChat('sd')">
+    <span class="dot sd"></span> 🟢 SD
+   </button>
+   <button class="level-option" data-level="smp" onclick="selectLevelChat('smp')">
+    <span class="dot smp"></span> 🔵 SMP
+   </button>
+   <button class="level-option" data-level="sma" onclick="selectLevelChat('sma')">
+    <span class="dot sma"></span> 🟡 SMA
+   </button>
+   <button class="level-option" data-level="mahasiswa" onclick="selectLevelChat('mahasiswa')">
+    <span class="dot mahasiswa"></span> 🟣 Mahasiswa
+   </button>
+   <button class="level-option" data-level="umum" onclick="selectLevelChat('umum')">
+    <span class="dot umum"></span> ⚪ Umum
+   </button>
+  </div>
+ </div>
+ 
  <div class="clear-chat">
   <button onclick="clearChatHistory()">🗑️ Hapus riwayat chat</button>
  </div>
@@ -257,6 +497,31 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 <!-- TAB VOICE CHAT -->
 <section id="tabVoice" class="card hidden">
  <div class="card-title">🎤 Ngobrol Suara dengan AI</div>
+ 
+ <!-- LEVEL SELECTOR untuk Voice -->
+ <div style="margin-bottom:10px">
+  <div class="level-selector" id="levelSelectorVoice">
+   <button class="level-option" data-level="otomatis" onclick="selectLevelVoice('otomatis')">
+    <span class="dot otomatis"></span> 🤖 Otomatis
+   </button>
+   <button class="level-option" data-level="sd" onclick="selectLevelVoice('sd')">
+    <span class="dot sd"></span> 🟢 SD
+   </button>
+   <button class="level-option" data-level="smp" onclick="selectLevelVoice('smp')">
+    <span class="dot smp"></span> 🔵 SMP
+   </button>
+   <button class="level-option" data-level="sma" onclick="selectLevelVoice('sma')">
+    <span class="dot sma"></span> 🟡 SMA
+   </button>
+   <button class="level-option" data-level="mahasiswa" onclick="selectLevelVoice('mahasiswa')">
+    <span class="dot mahasiswa"></span> 🟣 Mahasiswa
+   </button>
+   <button class="level-option" data-level="umum" onclick="selectLevelVoice('umum')">
+    <span class="dot umum"></span> ⚪ Umum
+   </button>
+  </div>
+ </div>
+ 
  <div style="margin-bottom:10px">
   <div class="voice-container">
    <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceChat()" title="Klik untuk mulai bicara">🎙️</button>
@@ -319,6 +584,7 @@ textarea{min-height:112px;resize:vertical;line-height:1.5}
 <script>
 // ============ CONFIG ============
 const KEY_STORE = "studyai_groq_key_v2";
+const LEVEL_STORE = "studyai_level_preference";
 const $ = id => document.getElementById(id);
 let chatHistory = [];
 let quizData = null;
@@ -327,6 +593,218 @@ let isListening = false;
 let recognition = null;
 let voiceChatHistory = [];
 let isProcessingVoice = false;
+
+// ============ LEVEL CONFIG ============
+const LEVEL_CONFIG = {
+  'otomatis': { 
+    class: '', 
+    badge: 'otomatis', 
+    icon: '🤖',
+    label: 'Otomatis',
+    color: '#6d7cff',
+    emoji: '🤖'
+  },
+  'SD': { 
+    class: 'level-sd', 
+    badge: 'sd', 
+    icon: '🟢',
+    label: 'SD',
+    color: '#10b981',
+    emoji: '🌱'
+  },
+  'SMP': { 
+    class: 'level-smp', 
+    badge: 'smp', 
+    icon: '🔵',
+    label: 'SMP',
+    color: '#3b82f6',
+    emoji: '📘'
+  },
+  'SMA': { 
+    class: 'level-sma', 
+    badge: 'sma', 
+    icon: '🟡',
+    label: 'SMA',
+    color: '#f59e0b',
+    emoji: '📙'
+  },
+  'Mahasiswa': { 
+    class: 'level-mahasiswa', 
+    badge: 'mahasiswa', 
+    icon: '🟣',
+    label: 'Mahasiswa',
+    color: '#8b5cf6',
+    emoji: '🎓'
+  },
+  'Umum': { 
+    class: 'level-umum', 
+    badge: 'umum', 
+    icon: '⚪',
+    label: 'Umum',
+    color: '#6b7280',
+    emoji: '📚'
+  }
+};
+
+// ============ LEVEL PREFERENCE ============
+let currentLevelMode = 'otomatis'; // 'otomatis' atau 'manual'
+let selectedLevel = 'otomatis'; // level yang dipilih user
+
+function loadLevelPreference() {
+  const saved = localStorage.getItem(LEVEL_STORE);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      currentLevelMode = data.mode || 'otomatis';
+      selectedLevel = data.level || 'otomatis';
+      return true;
+    } catch(e) {}
+  }
+  return false;
+}
+
+function saveLevelPreference() {
+  localStorage.setItem(LEVEL_STORE, JSON.stringify({
+    mode: currentLevelMode,
+    level: selectedLevel
+  }));
+}
+
+function toggleLevelMode() {
+  const mode = document.getElementById('levelMode').value;
+  currentLevelMode = mode;
+  saveLevelPreference();
+  updateLevelUI();
+}
+
+function selectLevel(level) {
+  selectedLevel = level;
+  if (level === 'otomatis') {
+    currentLevelMode = 'otomatis';
+    document.getElementById('levelMode').value = 'otomatis';
+  } else {
+    currentLevelMode = 'manual';
+    document.getElementById('levelMode').value = 'manual';
+  }
+  saveLevelPreference();
+  updateLevelUI();
+}
+
+function selectLevelChat(level) {
+  selectLevel(level);
+  // Sync semua level selector
+  updateLevelUI();
+}
+
+function selectLevelVoice(level) {
+  selectLevel(level);
+  updateLevelUI();
+}
+
+function updateLevelUI() {
+  // Update semua level selector
+  const selectors = ['levelSelector', 'levelSelectorChat', 'levelSelectorVoice'];
+  selectors.forEach(selectorId => {
+    const container = document.getElementById(selectorId);
+    if (!container) return;
+    const buttons = container.querySelectorAll('.level-option');
+    buttons.forEach(btn => {
+      const level = btn.dataset.level;
+      btn.className = 'level-option';
+      if (level === selectedLevel) {
+        if (level === 'otomatis') {
+          btn.classList.add('active-otomatis');
+        } else {
+          btn.classList.add('active-' + level);
+        }
+      }
+    });
+  });
+  
+  // Update status text
+  const config = getLevelConfig(selectedLevel);
+  const statusText = document.getElementById('levelStatus');
+  if (statusText) {
+    if (selectedLevel === 'otomatis') {
+      statusText.innerHTML = '🤖 Mode: Otomatis - AI akan mendeteksi level dari pertanyaan';
+    } else {
+      statusText.innerHTML = `✋ Mode: Manual - Level ${config.label} ${config.emoji}`;
+    }
+  }
+  
+  // Update levelMode dropdown
+  document.getElementById('levelMode').value = currentLevelMode;
+}
+
+function getLevelConfig(level) {
+  if (level === 'otomatis') return LEVEL_CONFIG['otomatis'];
+  return LEVEL_CONFIG[level] || LEVEL_CONFIG['Umum'];
+}
+
+function getActiveLevel(text) {
+  if (selectedLevel !== 'otomatis') {
+    return selectedLevel;
+  }
+  // Deteksi otomatis
+  return detectLevel(text);
+}
+
+// ============ DETECT LEVEL OTOMATIS ============
+function detectLevel(text) {
+  const lower = text.toLowerCase();
+  
+  if (lower.includes('sd') || lower.includes('sekolah dasar') || 
+      lower.includes('kelas 1') || lower.includes('kelas 2') || 
+      lower.includes('kelas 3') || lower.includes('kelas 4') ||
+      lower.includes('kelas 5') || lower.includes('kelas 6') ||
+      (lower.includes('anak') && (lower.includes('mudah') || lower.includes('sederhana')))) {
+    return 'SD';
+  }
+  
+  if (lower.includes('smp') || lower.includes('sekolah menengah pertama') ||
+      lower.includes('kelas 7') || lower.includes('kelas 8') || lower.includes('kelas 9') ||
+      lower.includes('remaja')) {
+    return 'SMP';
+  }
+  
+  if (lower.includes('sma') || lower.includes('sekolah menengah atas') ||
+      lower.includes('kelas 10') || lower.includes('kelas 11') || lower.includes('kelas 12') ||
+      lower.includes('un') || lower.includes('ujian nasional') ||
+      lower.includes('matematika minat') || lower.includes('fisika minat')) {
+    return 'SMA';
+  }
+  
+  if (lower.includes('universitas') || lower.includes('kuliah') || 
+      lower.includes('perguruan tinggi') || lower.includes('mahasiswa') ||
+      lower.includes('uts') || lower.includes('uas') || lower.includes('skripsi') ||
+      lower.includes('tesis') || lower.includes('disertasi') ||
+      lower.includes('kalkulus') || lower.includes('mekanika kuantum')) {
+    return 'Mahasiswa';
+  }
+  
+  const complexWords = ['analisis', 'turunan', 'integral', 'matriks', 'vektor', 
+                        'persamaan diferensial', 'termodinamika', 'relativitas',
+                        'kimia organik', 'biologi molekuler', 'genetika'];
+  const complexCount = complexWords.filter(w => lower.includes(w)).length;
+  
+  if (complexCount >= 2) return 'Mahasiswa';
+  if (complexCount === 1) return 'SMA';
+  
+  if (text.length > 100) return 'SMA';
+  if (text.length > 50) return 'SMP';
+  return 'SD';
+}
+
+function getLevelDescription(level) {
+  const descriptions = {
+    'SD': 'SD - penjelasan sangat sederhana dengan banyak contoh visual',
+    'SMP': 'SMP - penjelasan menengah dengan contoh konkret',
+    'SMA': 'SMA - penjelasan detail dengan konsep dan rumus',
+    'Mahasiswa': 'Mahasiswa - penjelasan mendalam dengan analisis kritis',
+    'Umum': 'Umum - penjelasan untuk semua kalangan'
+  };
+  return descriptions[level] || descriptions['SMP'];
+}
 
 // ============ API KEY MANAGEMENT ============
 let API_KEY = localStorage.getItem(KEY_STORE) || '';
@@ -420,65 +898,6 @@ function getKey() {
   $("keyStatus").className = "status err";
   $("apiKey").focus();
   return "";
-}
-
-// ============ DETECT LEVEL OTOMATIS ============
-function detectLevel(text) {
-  const lower = text.toLowerCase();
-  
-  // Deteksi level dari kata kunci
-  if (lower.includes('sd') || lower.includes('sekolah dasar') || 
-      lower.includes('kelas 1') || lower.includes('kelas 2') || 
-      lower.includes('kelas 3') || lower.includes('kelas 4') ||
-      lower.includes('kelas 5') || lower.includes('kelas 6') ||
-      lower.includes('anak') && (lower.includes('mudah') || lower.includes('sederhana'))) {
-    return 'SD';
-  }
-  
-  if (lower.includes('smp') || lower.includes('sekolah menengah pertama') ||
-      lower.includes('kelas 7') || lower.includes('kelas 8') || lower.includes('kelas 9') ||
-      lower.includes('remaja')) {
-    return 'SMP';
-  }
-  
-  if (lower.includes('sma') || lower.includes('sekolah menengah atas') ||
-      lower.includes('kelas 10') || lower.includes('kelas 11') || lower.includes('kelas 12') ||
-      lower.includes('un') || lower.includes('ujian nasional') ||
-      lower.includes('matematika minat') || lower.includes('fisika minat')) {
-    return 'SMA';
-  }
-  
-  if (lower.includes('universitas') || lower.includes('kuliah') || 
-      lower.includes('perguruan tinggi') || lower.includes('mahasiswa') ||
-      lower.includes('uts') || lower.includes('uas') || lower.includes('skripsi') ||
-      lower.includes('tesis') || lower.includes('disertasi') ||
-      lower.includes('kalkulus') || lower.includes('mekanika kuantum')) {
-    return 'Mahasiswa';
-  }
-  
-  // Deteksi dari kompleksitas pertanyaan
-  const complexWords = ['analisis', 'turunan', 'integral', 'matriks', 'vektor', 
-                        'persamaan diferensial', 'termodinamika', 'relativitas',
-                        'kimia organik', 'biologi molekuler', 'genetika'];
-  const complexCount = complexWords.filter(w => lower.includes(w)).length;
-  
-  if (complexCount >= 2) return 'Mahasiswa';
-  if (complexCount === 1) return 'SMA';
-  
-  // Default berdasarkan panjang pertanyaan
-  if (text.length > 100) return 'SMA';
-  if (text.length > 50) return 'SMP';
-  return 'SD';
-}
-
-function getLevelDescription(level) {
-  const descriptions = {
-    'SD': 'SD - penjelasan sangat sederhana dengan banyak contoh visual',
-    'SMP': 'SMP - penjelasan menengah dengan contoh konkret',
-    'SMA': 'SMA - penjelasan detail dengan konsep dan rumus',
-    'Mahasiswa': 'Mahasiswa - penjelasan mendalam dengan analisis kritis'
-  };
-  return descriptions[level] || descriptions['SMP'];
 }
 
 // ============ MATERI DATA ============
@@ -795,6 +1214,38 @@ Jangan gunakan simbol ##, ###, **, atau ---.
 `;
 }
 
+// ============ CREATE AI MESSAGE WITH LEVEL COLOR ============
+function createAIMessage(answer, level, containerId = 'chat') {
+  const container = document.getElementById(containerId);
+  const config = getLevelConfig(level);
+  
+  const d = document.createElement("div");
+  const levelClass = level !== 'otomatis' ? config.class : '';
+  d.className = `message ai ${levelClass}`;
+  
+  // Level badge di dalam pesan
+  const levelBadge = `<span class="level-badge ${config.badge}">${config.emoji} ${config.label}</span>`;
+  
+  d.innerHTML = `
+    <div class="ai-content">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px;color:var(--muted)">
+        <span>${config.icon} Level: ${config.label}</span>
+        ${levelBadge}
+      </div>
+      ${renderAI(answer)}
+    </div>
+    <div class="actionbar">
+      <button class="btn small secondary" onclick="speakText(this.closest('.message').querySelector('.ai-content').textContent.replace(/Level:.*?\\n/, ''))">🔊 Suara</button>
+      <button class="btn small secondary" onclick="copyAnswer(this)">📋 Salin</button>
+      ${containerId === 'chat' ? '<button class="btn small secondary" onclick="retryLast()">🔄 Tanya Lagi</button>' : ''}
+    </div>
+  `;
+  
+  container.appendChild(d);
+  scrollToChat();
+  return d;
+}
+
 // ============ TEXT TO SPEECH ============
 function speakText(text) {
   if(!window.speechSynthesis) return;
@@ -930,7 +1381,7 @@ async function processVoiceInput(text) {
   try {
     const key = getKey();
     if(!key) throw new Error("API Key tidak ditemukan");
-    const level = detectLevel(text);
+    const level = getActiveLevel(text);
     const model = document.getElementById('model').value;
     
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -953,14 +1404,26 @@ async function processVoiceInput(text) {
     if(!answer) throw new Error("Tidak ada jawaban.");
     
     loading.remove();
-    const aiDiv = document.createElement("div");
-    aiDiv.className = "message ai";
-    aiDiv.innerHTML = `<div class="ai-content">🔊 ${renderAI(answer)}</div>
+    
+    // Gunakan createAIMessage untuk voice chat
+    const config = getLevelConfig(level);
+    const d = document.createElement("div");
+    const levelClass = level !== 'otomatis' ? config.class : '';
+    d.className = `message ai ${levelClass}`;
+    d.innerHTML = `
+      <div class="ai-content">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px;color:var(--muted)">
+          <span>${config.icon} Level: ${config.label}</span>
+          <span class="level-badge ${config.badge}">${config.emoji} ${config.label}</span>
+        </div>
+        ${renderAI(answer)}
+      </div>
       <div class="actionbar">
-        <button class="btn small secondary" onclick="speakText(this.closest('.message').querySelector('.ai-content').textContent.replace('🔊 ',''))">🔊 Suara</button>
+        <button class="btn small secondary" onclick="speakText(this.closest('.message').querySelector('.ai-content').textContent.replace(/Level:.*?\\n/, ''))">🔊 Suara</button>
         <button class="btn small secondary" onclick="copyAnswer(this)">📋 Salin</button>
-      </div>`;
-    document.getElementById(container).appendChild(aiDiv);
+      </div>
+    `;
+    document.getElementById(container).appendChild(d);
     
     const cleanAnswer = answer.replace(/\*\*/g, '').replace(/#/g, '').replace(/---/g, '');
     speakText(cleanAnswer);
@@ -970,10 +1433,10 @@ async function processVoiceInput(text) {
     scrollToChat();
   } catch(err) {
     loading.remove();
-    const aiDiv = document.createElement("div");
-    aiDiv.className = "message ai";
-    aiDiv.innerHTML = `<div class="ai-content"><h3>⚠️ Gagal</h3><p>${escapeHtml(err.message)}</p></div>`;
-    document.getElementById(container).appendChild(aiDiv);
+    const d = document.createElement("div");
+    d.className = "message ai";
+    d.innerHTML = `<div class="ai-content"><h3>⚠️ Gagal</h3><p>${escapeHtml(err.message)}</p></div>`;
+    document.getElementById(container).appendChild(d);
     document.getElementById('voiceStatus').textContent = "❌ " + err.message;
     document.getElementById('voiceText').textContent = "❌ " + err.message;
   }
@@ -1012,7 +1475,7 @@ async function sendChat() {
   const loading = addLoading(container);
   
   try {
-    const level = detectLevel(message);
+    const level = getActiveLevel(message);
     const model = document.getElementById('model').value;
     
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -1035,18 +1498,10 @@ async function sendChat() {
     if(!answer) throw new Error("Tidak ada jawaban.");
     
     loading.remove();
-    const d = document.createElement("div");
-    d.className = "message ai";
-    d.innerHTML = `<div class="ai-content">${renderAI(answer)}</div>
-      <div class="actionbar">
-        <button class="btn small secondary" onclick="speakText(this.closest('.message').querySelector('.ai-content').textContent)">🔊 Suara</button>
-        <button class="btn small secondary" onclick="copyAnswer(this)">📋 Salin</button>
-      </div>`;
-    document.getElementById(container).appendChild(d);
+    createAIMessage(answer, level, container);
     
     document.getElementById('chatStatus').textContent = `✅ Respon untuk level ${level}`;
     document.getElementById('chatStatus').className = "status ok";
-    scrollToChat();
   } catch(err) {
     loading.remove();
     const d = document.createElement("div");
@@ -1084,7 +1539,7 @@ async function ask(mode) {
   }
   
   const fullText = q || topic;
-  const level = detectLevel(fullText);
+  const level = getActiveLevel(fullText);
   
   addUser(fullText);
   const loading = addLoading();
@@ -1112,20 +1567,12 @@ async function ask(mode) {
     if(!answer) throw new Error("AI tidak mengirim jawaban.");
     
     loading.remove();
-    const d = document.createElement("div");
-    d.className = "message ai";
-    d.innerHTML = `<div class="ai-content">${renderAI(answer)}</div>
-      <div class="actionbar">
-        <button class="btn small secondary" onclick="speakText(this.closest('.message').querySelector('.ai-content').textContent)">🔊 Suara</button>
-        <button class="btn small secondary" onclick="copyAnswer(this)">📋 Salin</button>
-        <button class="btn small secondary" onclick="retryLast()">🔄 Tanya Lagi</button>
-      </div>`;
-    document.getElementById('chat').appendChild(d);
+    createAIMessage(answer, level, 'chat');
+    
     window.lastRequest = {mode, topic, q};
     document.getElementById('status').textContent = `✅ Selesai (Level: ${level})`;
     document.getElementById('status').className = "status ok";
     document.getElementById('question').value = "";
-    scrollToChat();
   } catch(err) {
     loading.remove();
     const d = document.createElement("div");
@@ -1149,7 +1596,7 @@ async function generateQuiz() {
     return;
   }
   
-  const level = detectLevel(topic);
+  const level = getActiveLevel(topic);
   const model = document.getElementById('model').value;
   
   document.getElementById('quizStatus').textContent = `⏳ AI (${level}) membuat soal...`;
@@ -1285,7 +1732,10 @@ function resetQuiz() {
 // ============ UTILITY ============
 async function copyAnswer(btn) {
   const box = btn.closest(".message").querySelector(".ai-content");
-  const text = box.innerText.replace('🔊 ', '').trim();
+  // Hapus teks level indicator sebelum copy
+  let text = box.innerText;
+  text = text.replace(/Level:.*?\n/, '').trim();
+  
   try {
     await navigator.clipboard.writeText(text);
     btn.textContent = "✅ Tersalin";
@@ -1308,6 +1758,13 @@ function retryLast() {
 }
 
 // ============ INIT ============
+// Load level preference
+if (!loadLevelPreference()) {
+  selectedLevel = 'otomatis';
+  currentLevelMode = 'otomatis';
+}
+updateLevelUI();
+
 if(window.speechSynthesis) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
