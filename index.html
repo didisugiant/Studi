@@ -2769,52 +2769,6 @@ function startQuizTimer(seconds = 120) {
 }
 
 async function generateQuiz(){
-  const key=getKey();if(!key)return;
-  const topic=document.getElementById('quizTopic').value.trim();
-  if(!topic){
-    document.getElementById('quizStatus').textContent="⚠️ Masukkan topik kuis.";
-    document.getElementById('quizStatus').className="status err";
-    return;
-  }
-  
-  lastQuizTopic = topic;
-  const level = getActiveLevel(topic);
-  const currentLevel = getCurrentQuizLevel();
-  const config = getLevelConfig(currentLevel);
-  const qCount = config.questions || 5;
-  
-  document.getElementById('quizStatus').textContent=`⏳ AI membuat ${qCount} soal Level ${currentLevel} (${config.name})...`;
-  document.getElementById('quizStatus').className="status";
-  document.getElementById('quizContainer').innerHTML='<div class="loading" style="justify-content:center;padding:20px"><span>🤖</span><span>Membuat soal</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
-  
-  try{
-    const resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{
-      method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body:JSON.stringify({model:document.getElementById('model').value,messages:[{role:"system",content:`Kamu adalah pembuat soal untuk pelajar tingkat ${level}. ${getLevelDescription(level)}. Buat ${qCount} soal pilihan ganda dengan 4 pilihan (A,B,C,D). Format JSON: { "questions": [ { "question": "teks", "options": ["A","B","C","D"], "correct": 0 } ] }`},{role:"user",content:`Buatkan ${qCount} soal pilihan ganda tentang: ${topic}`}],temperature:.7,max_completion_tokens:2500})
-    });
-    const data=await resp.json();
-    if(!resp.ok)throw new Error(data?.error?.message||"HTTP "+resp.status);
-    const content=data?.choices?.[0]?.message?.content?.trim();
-    if(!content)throw new Error("Tidak ada respons.");
-    let parsed;
-    try{const jm=content.match(/\{[\s\S]*\}/);parsed=jm?JSON.parse(jm[0]):JSON.parse(content)}catch(e){throw new Error("Gagal parse JSON.")}
-    if(!parsed.questions||parsed.questions.length<qCount)throw new Error(`Kurang dari ${qCount} soal.`);
-    quizData=parsed.questions;quizAnswered=false;wrongAnswersList=[];
-    renderQuiz(quizData);
-    
-    if (quizData) {
-      startQuizTimer(120 + (currentLevel * 5));
-    }
-    
-    document.getElementById('quizStatus').textContent=`✅ ${quizData.length} soal berhasil dibuat (Level ${currentLevel})`;
-    document.getElementById('quizStatus').className="status ok";
-    updateDailyChallenge();
-  }catch(err){
-    document.getElementById('quizContainer').innerHTML=`<div class="lesson-box" style="text-align:center;padding:20px;border-color:#ff6b7a"><p style="color:#ff6b7a">❌ ${escapeHtml(err.message)}</p><button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="generateQuiz()">🔄 Coba Lagi</button></div>`;
-    document.getElementById('quizStatus').textContent="❌ "+err.message;document.getElementById('quizStatus').className="status err";
-  }
-}
-
 function renderQuiz(qs){
   const c=$('quizContainer');
   const currentLevel = getCurrentQuizLevel();
@@ -2855,33 +2809,67 @@ function submitQuiz(){
     quizTimer = null;
   }
   
-  const qs=quizData;let correct=0,total=qs.length,allAnswered=true;
+  const qs=quizData;
+  let correct=0;
+  let total=qs.length;
+  let allAnswered=true;
   const wrongQuestions=[];
+  
   qs.forEach((q,i)=>{
     const sel=document.querySelector(`input[name="q${i}"]:checked`);
-    if(!sel){allAnswered=false;return}
-    const val=parseInt(sel.value),isCorrect=(val===q.correct);
-    if(isCorrect)correct++;
-    else {wrongQuestions.push({question:q.question,correct:q.correct,options:q.options,userAnswer:val})}
+    if(!sel){
+      allAnswered=false;
+      return;
+    }
+    
+    // PERBAIKAN: Validasi value
+    const val = parseInt(sel.value);
+    if (isNaN(val) || val < 0 || val > 3) {
+      allAnswered = false;
+      return;
+    }
+    
+    // PERBAIKAN: Pastikan q.correct valid
+    const correctIndex = typeof q.correct === 'number' ? q.correct : 0;
+    const isCorrect = (val === correctIndex);
+    
+    if(isCorrect) {
+      correct++;
+    } else {
+      wrongQuestions.push({
+        question: q.question,
+        correct: correctIndex,
+        options: q.options || ['A', 'B', 'C', 'D'],
+        userAnswer: val
+      });
+    }
+    
+    // Tampilkan feedback
     const labels=document.querySelectorAll(`#options${i} label`);
     labels.forEach((l,idx)=>{
       l.classList.add('disabled');
       const r=l.querySelector('input[type="radio"]');
       if(r) r.disabled=true;
-      if(idx===q.correct)l.classList.add('correct');
-      else if(idx===val&&!isCorrect)l.classList.add('wrong');
+      if(idx===correctIndex) {
+        l.classList.add('correct');
+      } else if(idx===val && !isCorrect) {
+        l.classList.add('wrong');
+      }
     });
   });
+  
   if(!allAnswered){
     document.getElementById('quizStatus').textContent="⚠️ Jawab semua soal!";
     document.getElementById('quizStatus').className="status err";
     return;
   }
+  
   quizAnswered=true;
   const score=Math.round((correct/total)*100);
   wrongAnswersList=wrongQuestions;
   saveWrongAnswers(wrongQuestions);
   saveQuizHistory(document.getElementById('quizTopic').value.trim(),score,total);
+}
   
   const oldLevel = getCurrentQuizLevel();
   const pointsEarned = score >= 70 ? 20 : (score >= 50 ? 10 : 5);
