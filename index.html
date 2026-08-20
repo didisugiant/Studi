@@ -66,6 +66,7 @@ body {
   filter: blur(80px);
   opacity: 0.3;
   animation: orbFloat 20s ease-in-out infinite;
+  will-change: transform;
 }
 .ambient-bg .orb:nth-child(1) {
   width: 400px;
@@ -147,6 +148,7 @@ header {
   background: var(--gradient-primary);
   box-shadow: var(--shadow-glow);
   transition: var(--transition);
+  will-change: transform;
 }
 .logo-wrapper:hover .logo {
   transform: scale(1.05) rotate(-5deg);
@@ -427,6 +429,10 @@ input, select, textarea {
   outline: none;
   transition: var(--transition);
   font-family: inherit;
+}
+input::placeholder, textarea::placeholder {
+  color: rgba(255,255,255,0.4);
+  opacity: 1;
 }
 input:focus, select:focus, textarea:focus {
   border-color: rgba(109,124,255,0.3);
@@ -1419,6 +1425,50 @@ select option { background: #1a1a2e; }
 }
 .topic-btn .emoji { font-size: 16px; }
 
+/* ===== LEVEL PROGRESS BAR ===== */
+.level-progress-container {
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  border: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 10px;
+}
+.level-progress-container .level-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.level-progress-container .level-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #fbbf24;
+}
+.level-progress-container .level-number {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.level-progress-container .level-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.level-progress-container .level-bar .fill {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--gradient-gold);
+  transition: width 0.8s ease;
+}
+.level-progress-container .level-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .app { padding: 0 14px 24px; }
@@ -1503,8 +1553,8 @@ select option { background: #1a1a2e; }
   </div>
  </div>
  <div class="header-actions">
-  <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Dark Mode">🌙</button>
-  <button class="icon-btn" id="settingsBtn" aria-label="Pengaturan">⚙️</button>
+  <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Ganti Tema (Gelap/Terang)">🌙</button>
+  <button class="icon-btn" id="settingsBtn" aria-label="Buka Pengaturan">⚙️</button>
  </div>
 </header>
 
@@ -1567,6 +1617,10 @@ select option { background: #1a1a2e; }
   <button class="btn btn-secondary" onclick="removeUserKey()">🗑️ Hapus Key</button>
  </div>
  <div id="keyStatus" class="status"></div>
+ 
+ <div class="btn-row" style="margin-top: 10px;">
+  <button class="btn btn-danger" onclick="resetAllData()">⚠️ Reset Semua Data</button>
+ </div>
 </section>
 
 <!-- ===== TABS ===== -->
@@ -1657,6 +1711,23 @@ select option { background: #1a1a2e; }
 <!-- ===== TAB KUIS ===== -->
 <section id="tabQuiz" class="card hidden">
  <div class="card-title">🧠 Kuis Interaktif</div>
+ 
+ <!-- LEVEL PROGRESS -->
+ <div class="level-progress-container" id="quizLevelDisplay">
+  <div class="level-header">
+   <span class="level-name">🎯 Level: Pemula</span>
+   <span class="level-number">1 / 100</span>
+  </div>
+  <div class="level-bar">
+   <div class="fill" style="width:0%"></div>
+  </div>
+  <div class="level-info">
+   <span>Pemula</span>
+   <span id="levelPointsDisplay">0 / 50 pts</span>
+   <span>Jenius</span>
+  </div>
+ </div>
+ 
  <div class="daily-challenge" id="dailyChallenge">
   <div class="challenge-icon">🔥</div>
   <div class="challenge-info">
@@ -1677,6 +1748,8 @@ select option { background: #1a1a2e; }
  <div class="btn-row">
   <button class="btn btn-primary" onclick="generateQuiz()">🎯 Buat Kuis</button>
   <button class="btn btn-secondary" onclick="resetQuiz()">🔄 Reset</button>
+  <button class="btn btn-secondary btn-sm" onclick="clearQuizHistory()" style="grid-column: span 2;">🗑️ Hapus Riwayat</button>
+  <button class="btn btn-secondary btn-sm" onclick="resetQuizLevels()" style="grid-column: span 2;">🔄 Reset Level</button>
  </div>
  <div id="quizStatus" class="status"></div>
  <div id="quizContainer" style="margin-top:10px">
@@ -1879,6 +1952,7 @@ const WRONG_ANSWERS_STORE = "studyai_wrong_answers";
 const STREAK_STORE = "studyai_streak";
 const LEADERBOARD_STORE = "studyai_leaderboard";
 const GAME_STATS_STORE = "studyai_game_stats";
+const QUIZ_LEVEL_STORE = "studyai_quiz_level";
 const $ = id => document.getElementById(id);
 let quizData = null, quizAnswered = false;
 let isListening = false, recognition = null, isProcessingVoice = false;
@@ -1886,6 +1960,34 @@ let currentResultTopic = '';
 let quizDifficulty = 'medium';
 let wrongAnswersList = [];
 let isFullscreenChat = false;
+let lastQuizTopic = '';
+let quizTimer = null;
+let timeLeft = 0;
+
+// ===== LEVEL SYSTEM 1-100 =====
+let quizLevel = 1;
+let quizLevelProgress = 0;
+
+// Generate level thresholds 1-100
+const LEVEL_THRESHOLDS = {};
+for (let i = 1; i <= 100; i++) {
+  const basePoints = 50;
+  const multiplier = i * i;
+  const pointsNeeded = Math.round(basePoints * (i / 10) * (i / 10));
+  const names = [
+    'Pemula', 'Pelajar', 'Mahir', 'Cendekia', 'Jenius',
+    'Master', 'Grandmaster', 'Legend', 'Mythic', 'Eternal'
+  ];
+  const nameIndex = Math.min(Math.floor((i - 1) / 10), names.length - 1);
+  const levelName = names[nameIndex] || 'Master';
+  const questions = Math.min(5 + Math.floor(i / 2), 30);
+  LEVEL_THRESHOLDS[i] = {
+    name: levelName + (i > 10 ? ' ' + (i % 10 || 10) : ''),
+    questions: questions,
+    pointsNeeded: pointsNeeded,
+    badge: i >= 90 ? '👑' : i >= 70 ? '⭐' : i >= 50 ? '🏅' : '🎯'
+  };
+}
 
 // ===== GAME VARIABLES =====
 let gameState = {
@@ -1907,6 +2009,95 @@ let gameState = {
 };
 
 // ============================================================
+// ============ LEVEL FUNCTIONS ============
+// ============================================================
+function getCurrentQuizLevel() {
+  let level = 1;
+  const keys = Object.keys(LEVEL_THRESHOLDS).map(Number).sort((a,b) => a - b);
+  for (let i = keys.length - 1; i >= 0; i--) {
+    if (userPoints >= LEVEL_THRESHOLDS[keys[i]].pointsNeeded) {
+      level = keys[i];
+      break;
+    }
+  }
+  return level;
+}
+
+function getLevelConfig(level) {
+  return LEVEL_THRESHOLDS[level] || LEVEL_THRESHOLDS[1];
+}
+
+function getNextLevel(level) {
+  return Math.min(level + 1, 100);
+}
+
+function saveQuizLevel() {
+  const data = {
+    level: quizLevel,
+    progress: quizLevelProgress,
+    updatedAt: new Date().toISOString()
+  };
+  localStorage.setItem(QUIZ_LEVEL_STORE, JSON.stringify(data));
+}
+
+function loadQuizLevel() {
+  try {
+    const data = JSON.parse(localStorage.getItem(QUIZ_LEVEL_STORE));
+    if (data) {
+      quizLevel = data.level || 1;
+      quizLevelProgress = data.progress || 0;
+    }
+  } catch(e) {}
+}
+
+function updateQuizLevelUI() {
+  const currentLevel = getCurrentQuizLevel();
+  const nextLevel = getNextLevel(currentLevel);
+  const currentConfig = getLevelConfig(currentLevel);
+  const nextConfig = getLevelConfig(nextLevel);
+  
+  const levelDisplay = document.getElementById('quizLevelDisplay');
+  if (levelDisplay) {
+    const progress = Math.min((userPoints / nextConfig.pointsNeeded) * 100, 100);
+    const levelName = currentConfig.badge + ' ' + currentConfig.name;
+    levelDisplay.innerHTML = `
+      <div class="level-header">
+        <span class="level-name">${levelName}</span>
+        <span class="level-number">${currentLevel} / 100</span>
+      </div>
+      <div class="level-bar">
+        <div class="fill" style="width:${Math.min(progress, 100)}%"></div>
+      </div>
+      <div class="level-info">
+        <span>${currentConfig.name}</span>
+        <span id="levelPointsDisplay">${userPoints} / ${nextConfig.pointsNeeded} pts</span>
+        <span>${nextConfig.name}</span>
+      </div>
+    `;
+  }
+  
+  // Update daily challenge description with level info
+  const desc = document.getElementById('dailyChallengeDesc');
+  if (desc) {
+    desc.textContent = `Level ${currentLevel}: ${currentConfig.name} • ${currentConfig.questions} soal per kuis`;
+  }
+}
+
+function resetQuizLevels() {
+  if (!confirm("Reset semua level kuis?")) return;
+  localStorage.removeItem(QUIZ_LEVEL_STORE);
+  quizLevel = 1;
+  quizLevelProgress = 0;
+  userPoints = 0;
+  localStorage.setItem(POINTS_STORE, userPoints);
+  updateQuizLevelUI();
+  updateLevelLabel();
+  document.getElementById('pointsValue').textContent = '0';
+  document.getElementById('quizStatus').textContent = "✅ Level direset ke Pemula";
+  document.getElementById('quizStatus').className = "status ok";
+}
+
+// ============================================================
 // ============ LEVEL ============
 // ============================================================
 const LEVEL_CONFIG = {
@@ -1917,7 +2108,7 @@ const LEVEL_CONFIG = {
   'Umum': { class: 'level-umum', label: 'Umum' }
 };
 
-function getLevelConfig(l){return LEVEL_CONFIG[l]||LEVEL_CONFIG['Umum']}
+function getLevelConfig2(l){return LEVEL_CONFIG[l]||LEVEL_CONFIG['Umum']}
 
 function detectLevel(text){
   const l=text.toLowerCase();
@@ -1964,6 +2155,15 @@ loadConfigKey().then(l=>{
 function saveUserKey(){const k=$("apiKey").value.trim();if(!k){$("keyStatus").textContent="❌ Masukkan API key.";$("keyStatus").className="status err";return}if(!k.startsWith('gsk_')){$("keyStatus").textContent="⚠️ API Key Groq dimulai dengan 'gsk_'";$("keyStatus").className="status err";return}localStorage.setItem(KEY_STORE,k);API_KEY=k;$("keyStatus").textContent="✅ API Key tersimpan";$("keyStatus").className="status ok"}
 function removeUserKey(){localStorage.removeItem(KEY_STORE);API_KEY='';$("apiKey").value="";$("keyStatus").textContent="🗑️ API Key dihapus";$("keyStatus").className="status";loadConfigKey()}
 function getKey(){if(API_KEY)return API_KEY;const k=$("apiKey").value.trim()||localStorage.getItem(KEY_STORE)||"";if(k){API_KEY=k;return k}if(typeof CONFIG!=='undefined'&&CONFIG.GROQ_API_KEY){API_KEY=CONFIG.GROQ_API_KEY;return API_KEY}$("settings").classList.remove("hidden");$("keyStatus").textContent="⚠️ Masukkan API Key";$("keyStatus").className="status err";$("apiKey").focus();return""}
+
+// ============================================================
+// ============ RESET ALL DATA ============
+// ============================================================
+function resetAllData(){
+  if (!confirm("⚠️ Yakin ingin menghapus SEMUA data? (Poin, catatan, progress, dll.)")) return;
+  localStorage.clear();
+  location.reload();
+}
 
 // ============================================================
 // ============ CHAT FUNCTIONS ============
@@ -2017,7 +2217,7 @@ function addUserBubble(text,cid){
 
 function addAIBubble(answer,level,cid,showActions=true){
   const c=document.getElementById(cid);if(!c)return;
-  const cfg=getLevelConfig(level);
+  const cfg=getLevelConfig2(level);
   const t=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
   const b=document.createElement('div');
   b.className=`chat-bubble ai ${cfg.class}`;
@@ -2092,8 +2292,11 @@ async function sendFullscreenChat(){
   const input=document.getElementById('fullscreenChatInput'),msg=input.value.trim();
   if(!msg){document.getElementById('fullscreenChatStatus').textContent="⚠️ Tulis pertanyaan.";document.getElementById('fullscreenChatStatus').className="status err";return}
   const cid="fullscreenChatContainer";
-  addUserBubble(msg,cid);input.value="";
-  document.getElementById('fullscreenChatStatus').textContent="⏳ AI merespon...";document.getElementById('fullscreenChatStatus').className="status";
+  addUserBubble(msg,cid);
+  scrollChat(cid);
+  input.value="";
+  document.getElementById('fullscreenChatStatus').textContent="⏳ AI sedang mengetik...";
+  document.getElementById('fullscreenChatStatus').className="status";
   const loading=addLoadingBubble(cid);
   try{
     const level=getActiveLevel(msg),model=document.getElementById('model').value;
@@ -2127,8 +2330,8 @@ function autoSummary(){
     return;
   }
   let summary='📝 **Ringkasan Percakapan:**\n\n';
-  messages.forEach((msg,i)=>{
-    const text=msg.textContent||msg.innerText;
+  messages.forEach((msg)=>{
+    const text=msg.innerText.trim();
     if(text.length>50)summary+=`• ${text.substring(0,100)}${text.length>100?'...':''}\n`;
   });
   const cid = isFullscreenChat ? 'fullscreenChatContainer' : 'chatContainer';
@@ -2164,7 +2367,7 @@ function switchTab(tab){
   if(tab==='games')resetGameUI();
   if(tab==='chat')setTimeout(()=>document.getElementById('chatInput').focus(),100);
   if(tab==='voice')initVoiceRecognition();
-  if(tab==='quiz'&&!quizData)setTimeout(()=>document.getElementById('quizTopic').focus(),100);
+  if(tab==='quiz'){updateQuizLevelUI();setTimeout(()=>document.getElementById('quizTopic').focus(),100);}
 }
 
 function quickAsk(topic,prompt){
@@ -2213,7 +2416,7 @@ async function sendResultChat(){
   const input=document.getElementById('resultChatInput'),msg=input.value.trim();
   if(!msg){document.getElementById('resultStatus').textContent="⚠️ Tulis pertanyaan lanjutan.";document.getElementById('resultStatus').className="status err";return}
   const cid="resultChat";addUserBubble(msg,cid);input.value="";
-  document.getElementById('resultStatus').textContent="⏳ AI merespon...";document.getElementById('resultStatus').className="status";
+  document.getElementById('resultStatus').textContent="⏳ AI sedang mengetik...";document.getElementById('resultStatus').className="status";
   const loading=addLoadingBubble(cid);
   const topic=currentResultTopic||'Umum',level=getActiveLevel(msg);
   try{
@@ -2261,7 +2464,10 @@ function speakText(text){
 
 function initVoiceRecognition(){
   if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
-    document.getElementById('voiceStatus').textContent="❌ Browser tidak mendukung voice recognition.";return false;
+    document.getElementById('voiceStatus').textContent = "❌ Browser tidak mendukung voice recognition. Gunakan Chrome.";
+    document.getElementById('voiceBtn').disabled = true;
+    document.getElementById('voiceBtn').style.opacity = '0.5';
+    return false;
   }
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   recognition=new SR();recognition.lang='id-ID';recognition.continuous=false;recognition.interimResults=true;
@@ -2350,7 +2556,7 @@ async function sendChat(){
   const input=document.getElementById('chatInput'),msg=input.value.trim();
   if(!msg){document.getElementById('chatStatus').textContent="⚠️ Tulis pertanyaan.";document.getElementById('chatStatus').className="status err";return}
   const cid="chatContainer";addUserBubble(msg,cid);input.value="";
-  document.getElementById('chatStatus').textContent="⏳ AI merespon...";document.getElementById('chatStatus').className="status";
+  document.getElementById('chatStatus').textContent="⏳ AI sedang mengetik...";document.getElementById('chatStatus').className="status";
   const loading=addLoadingBubble(cid);
   try{
     const level=getActiveLevel(msg),model=document.getElementById('model').value;
@@ -2384,12 +2590,79 @@ function clearChatHistory(){
 // ============ MATERI ============
 // ============================================================
 const MATERI_DATA={
-  'Matematika':{icon:'📐',topics:[{name:'Aljabar Dasar',emoji:'🔢',prompt:'Jelaskan aljabar dasar dengan contoh persamaan linear'},{name:'Persamaan Kuadrat',emoji:'📈',prompt:'Jelaskan persamaan kuadrat dengan rumus ABC dan contoh'},{name:'Trigonometri',emoji:'📐',prompt:'Jelaskan trigonometri dasar (sin, cos, tan) dengan contoh'},{name:'Logaritma',emoji:'📊',prompt:'Jelaskan logaritma dengan sifat-sifat dan contoh'},{name:'Statistika Dasar',emoji:'📊',prompt:'Jelaskan statistika dasar (mean, median, modus, standar deviasi)'},{name:'Kalkulus Dasar',emoji:'∫',prompt:'Jelaskan kalkulus dasar (turunan dan integral) dengan contoh'}]},
-  'Fisika':{icon:'⚛️',topics:[{name:'Gerak Lurus',emoji:'🏃',prompt:'Jelaskan gerak lurus beraturan dan berubah beraturan dengan contoh'},{name:'Hukum Newton',emoji:'🍎',prompt:'Jelaskan Hukum Newton 1,2,3 dengan contoh kehidupan sehari-hari'},{name:'Energi & Usaha',emoji:'⚡',prompt:'Jelaskan energi dan usaha dengan contoh'},{name:'Listrik Dasar',emoji:'💡',prompt:'Jelaskan listrik dasar (arus, tegangan, hambatan) dengan rumus'},{name:'Gelombang',emoji:'🌊',prompt:'Jelaskan gelombang dan sifat-sifatnya dengan contoh'}]},
-  'Biologi':{icon:'🧬',topics:[{name:'Sel',emoji:'🧫',prompt:'Jelaskan struktur sel dan fungsinya'},{name:'Fotosintesis',emoji:'🌱',prompt:'Jelaskan proses fotosintesis dengan reaksi kimia'},{name:'Sistem Pencernaan',emoji:'🍲',prompt:'Jelaskan sistem pencernaan manusia'},{name:'Sistem Pernapasan',emoji:'🫁',prompt:'Jelaskan sistem pernapasan manusia'}]},
-  'Bahasa Indonesia':{icon:'🇮🇩',topics:[{name:'Puisi',emoji:'📝',prompt:'Jelaskan puisi dan unsur-unsurnya dengan contoh'},{name:'Cerpen',emoji:'📖',prompt:'Jelaskan cerpen dan struktur cerpen'},{name:'Ejaan',emoji:'✍️',prompt:'Jelaskan ejaan bahasa Indonesia (EYD)'}]},
-  'Bahasa Inggris':{icon:'🇬🇧',topics:[{name:'Tenses',emoji:'⏰',prompt:'Jelaskan 16 tenses bahasa Inggris dengan contoh'},{name:'Grammar Dasar',emoji:'📚',prompt:'Jelaskan grammar bahasa Inggris dasar'},{name:'Vocabulary',emoji:'📖',prompt:'Jelaskan vocabulary bahasa Inggris untuk pelajar'}]},
-  'Sejarah':{icon:'📜',topics:[{name:'Kerajaan Majapahit',emoji:'🏛️',prompt:'Jelaskan sejarah Kerajaan Majapahit'},{name:'Kemerdekaan Indonesia',emoji:'🇮🇩',prompt:'Jelaskan sejarah kemerdekaan Indonesia'}]}
+  'Matematika':{icon:'📐',topics:[
+    {name:'Aljabar Dasar',emoji:'🔢',prompt:'Jelaskan aljabar dasar dengan contoh persamaan linear'},
+    {name:'Persamaan Kuadrat',emoji:'📈',prompt:'Jelaskan persamaan kuadrat dengan rumus ABC dan contoh'},
+    {name:'Trigonometri',emoji:'📐',prompt:'Jelaskan trigonometri dasar (sin, cos, tan) dengan contoh'},
+    {name:'Logaritma',emoji:'📊',prompt:'Jelaskan logaritma dengan sifat-sifat dan contoh'},
+    {name:'Statistika Dasar',emoji:'📊',prompt:'Jelaskan statistika dasar (mean, median, modus, standar deviasi)'},
+    {name:'Kalkulus Dasar',emoji:'∫',prompt:'Jelaskan kalkulus dasar (turunan dan integral) dengan contoh'},
+    {name:'Matriks',emoji:'🧮',prompt:'Jelaskan matriks dan operasi dasar matriks'},
+    {name:'Deret dan Barisan',emoji:'📈',prompt:'Jelaskan deret aritmatika dan geometri dengan contoh'}
+  ]},
+  'Fisika':{icon:'⚛️',topics:[
+    {name:'Gerak Lurus',emoji:'🏃',prompt:'Jelaskan gerak lurus beraturan dan berubah beraturan dengan contoh'},
+    {name:'Hukum Newton',emoji:'🍎',prompt:'Jelaskan Hukum Newton 1,2,3 dengan contoh kehidupan sehari-hari'},
+    {name:'Energi & Usaha',emoji:'⚡',prompt:'Jelaskan energi dan usaha dengan contoh'},
+    {name:'Listrik Dasar',emoji:'💡',prompt:'Jelaskan listrik dasar (arus, tegangan, hambatan) dengan rumus'},
+    {name:'Gelombang',emoji:'🌊',prompt:'Jelaskan gelombang dan sifat-sifatnya dengan contoh'},
+    {name:'Optik',emoji:'🔦',prompt:'Jelaskan optik geometri dan pembentukan bayangan'},
+    {name:'Termodinamika',emoji:'🔥',prompt:'Jelaskan termodinamika dan hukum-hukumnya'}
+  ]},
+  'Biologi':{icon:'🧬',topics:[
+    {name:'Sel',emoji:'🧫',prompt:'Jelaskan struktur sel dan fungsinya'},
+    {name:'Fotosintesis',emoji:'🌱',prompt:'Jelaskan proses fotosintesis dengan reaksi kimia'},
+    {name:'Sistem Pencernaan',emoji:'🍲',prompt:'Jelaskan sistem pencernaan manusia'},
+    {name:'Sistem Pernapasan',emoji:'🫁',prompt:'Jelaskan sistem pernapasan manusia'},
+    {name:'Sistem Sirkulasi',emoji:'❤️',prompt:'Jelaskan sistem peredaran darah manusia'},
+    {name:'Evolusi',emoji:'🧬',prompt:'Jelaskan teori evolusi Darwin'}
+  ]},
+  'Bahasa Indonesia':{icon:'🇮🇩',topics:[
+    {name:'Puisi',emoji:'📝',prompt:'Jelaskan puisi dan unsur-unsurnya dengan contoh'},
+    {name:'Cerpen',emoji:'📖',prompt:'Jelaskan cerpen dan struktur cerpen'},
+    {name:'Ejaan',emoji:'✍️',prompt:'Jelaskan ejaan bahasa Indonesia (EYD)'},
+    {name:'Pantun',emoji:'📜',prompt:'Jelaskan pantun dan cara membuatnya'},
+    {name:'Pidato',emoji:'🎤',prompt:'Jelaskan cara membuat pidato yang baik'}
+  ]},
+  'Bahasa Inggris':{icon:'🇬🇧',topics:[
+    {name:'Tenses',emoji:'⏰',prompt:'Jelaskan 16 tenses bahasa Inggris dengan contoh'},
+    {name:'Grammar Dasar',emoji:'📚',prompt:'Jelaskan grammar bahasa Inggris dasar'},
+    {name:'Vocabulary',emoji:'📖',prompt:'Jelaskan vocabulary bahasa Inggris untuk pelajar'},
+    {name:'Writing',emoji:'✍️',prompt:'Jelaskan cara menulis esai dalam bahasa Inggris'},
+    {name:'Speaking',emoji:'🗣️',prompt:'Jelaskan tips berbicara bahasa Inggris dengan lancar'}
+  ]},
+  'Sejarah':{icon:'📜',topics:[
+    {name:'Kerajaan Majapahit',emoji:'🏛️',prompt:'Jelaskan sejarah Kerajaan Majapahit'},
+    {name:'Kemerdekaan Indonesia',emoji:'🇮🇩',prompt:'Jelaskan sejarah kemerdekaan Indonesia'},
+    {name:'Perang Dunia',emoji:'⚔️',prompt:'Jelaskan sejarah Perang Dunia 1 dan 2'},
+    {name:'Kerajaan Islam di Indonesia',emoji:'🕌',prompt:'Jelaskan kerajaan-kerajaan Islam di Indonesia'},
+    {name:'Revolusi Industri',emoji:'🏭',prompt:'Jelaskan Revolusi Industri dan dampaknya'}
+  ]},
+  'Kimia':{icon:'🧪',topics:[
+    {name:'Struktur Atom',emoji:'⚛️',prompt:'Jelaskan struktur atom dan partikel penyusunnya'},
+    {name:'Ikatan Kimia',emoji:'🔗',prompt:'Jelaskan ikatan ion, kovalen, dan logam'},
+    {name:'Reaksi Kimia',emoji:'⚗️',prompt:'Jelaskan reaksi kimia dan persamaan reaksi'},
+    {name:'Asam-Basa',emoji:'🧪',prompt:'Jelaskan teori asam-basa dan pH'},
+    {name:'Termokimia',emoji:'🔥',prompt:'Jelaskan termokimia dan perubahan entalpi'}
+  ]},
+  'Ekonomi':{icon:'💰',topics:[
+    {name:'Permintaan dan Penawaran',emoji:'📊',prompt:'Jelaskan hukum permintaan dan penawaran'},
+    {name:'Inflasi',emoji:'📈',prompt:'Jelaskan inflasi dan dampaknya terhadap ekonomi'},
+    {name:'Pasar Modal',emoji:'🏦',prompt:'Jelaskan pasar modal dan instrumen investasi'},
+    {name:'Kebijakan Fiskal',emoji:'📋',prompt:'Jelaskan kebijakan fiskal dan moneter'}
+  ]},
+  'Geografi':{icon:'🌍',topics:[
+    {name:'Litosfer',emoji:'🗺️',prompt:'Jelaskan litosfer dan bentuk muka bumi'},
+    {name:'Hidrosfer',emoji:'🌊',prompt:'Jelaskan siklus hidrologi dan perairan'},
+    {name:'Atmosfer',emoji:'☁️',prompt:'Jelaskan atmosfer dan cuaca'},
+    {name:'Demografi',emoji:'👥',prompt:'Jelaskan demografi dan kepadatan penduduk'}
+  ]},
+  'Sosiologi':{icon:'👥',topics:[
+    {name:'Stratifikasi Sosial',emoji:'📊',prompt:'Jelaskan stratifikasi sosial dan mobilitas sosial'},
+    {name:'Budaya',emoji:'🎭',prompt:'Jelaskan pengertian budaya dan unsur-unsurnya'},
+    {name:'Sosialisasi',emoji:'🤝',prompt:'Jelaskan proses sosialisasi dan agen-agennya'},
+    {name:'Konflik Sosial',emoji:'⚡',prompt:'Jelaskan konflik sosial dan cara mengatasinya'}
+  ]}
 };
 
 function renderMateri(filter=''){
@@ -2410,48 +2683,114 @@ function learnSubject(s){
   const d=MATERI_DATA[s];
   document.getElementById('topic').value=s;
   document.getElementById('question').value=`Jelaskan semua materi tentang ${s} dengan lengkap. Topik: ${d.topics.map(t=>t.name).join(', ')}.`;
-  document.getElementById('question').focus();
-  resetResultChat();switchTab('learn');
+  resetResultChat();
+  switchTab('learn');
+  setTimeout(() => {
+    askLearn('explain');
+  }, 300);
 }
 
-function learnTopic(s,t,p){
+function learnTopic(s, t, p){
   document.getElementById('topic').value=s+' - '+t;
   document.getElementById('question').value=p+` tentang ${t} dalam ${s}.`;
-  document.getElementById('question').focus();
-  resetResultChat();switchTab('learn');
+  resetResultChat();
+  switchTab('learn');
+  setTimeout(() => {
+    askLearn('explain');
+  }, 300);
 }
 
 // ============================================================
-// ============ QUIZ - TANPA TIMER ============
+// ============ QUIZ ============
 // ============================================================
 function setQuizDifficulty(diff){
   quizDifficulty=diff;
-  document.querySelectorAll('#tabQuiz .btn-secondary, #tabQuiz .btn-primary').forEach(b=>{
-    b.className='btn btn-sm btn-secondary';
+  ['diffEasy', 'diffMedium', 'diffHard'].forEach(id => {
+    const btn = document.getElementById(id);
+    if(btn) btn.className = 'btn btn-sm btn-secondary';
   });
-  if(diff==='easy'){$('diffEasy').className='btn btn-sm btn-success'}
-  else if(diff==='medium'){$('diffMedium').className='btn btn-sm btn-primary'}
-  else{$('diffHard').className='btn btn-sm btn-danger'}
+  if(diff==='easy'){
+    const btn = document.getElementById('diffEasy');
+    if(btn) btn.className = 'btn btn-sm btn-success';
+  } else if(diff==='medium'){
+    const btn = document.getElementById('diffMedium');
+    if(btn) btn.className = 'btn btn-sm btn-primary';
+  } else {
+    const btn = document.getElementById('diffHard');
+    if(btn) btn.className = 'btn btn-sm btn-danger';
+  }
 }
 
 function getQuestionsCount(){
-  return quizDifficulty==='easy'?5:quizDifficulty==='medium'?7:10;
+  const currentLevel = getCurrentQuizLevel();
+  const config = getLevelConfig(currentLevel);
+  return config.questions || 5;
+}
+
+function startQuizTimer(seconds = 120) {
+  if (quizTimer) {
+    clearInterval(quizTimer);
+    quizTimer = null;
+  }
+  
+  const oldTimer = document.getElementById('quizTimer');
+  if (oldTimer) oldTimer.remove();
+  
+  const container = document.getElementById('quizContainer');
+  if (!container) return;
+  
+  const div = document.createElement('div');
+  div.id = 'quizTimer';
+  div.style.cssText = 'text-align:center;font-size:14px;color:#fbbf24;margin:6px 0';
+  container.prepend(div);
+  
+  timeLeft = seconds;
+  div.textContent = `⏱️ Waktu: ${timeLeft}s`;
+  
+  quizTimer = setInterval(() => {
+    timeLeft--;
+    const display = document.getElementById('quizTimer');
+    if (display) {
+      display.textContent = `⏱️ Waktu: ${timeLeft}s`;
+    }
+    if (timeLeft <= 0) {
+      clearInterval(quizTimer);
+      quizTimer = null;
+      if (!quizAnswered) {
+        submitQuiz();
+        const status = document.getElementById('quizStatus');
+        if(status) {
+          status.textContent = "⏰ Waktu habis!";
+          status.className = "status err";
+        }
+      }
+    }
+  }, 1000);
 }
 
 async function generateQuiz(){
   const key=getKey();if(!key)return;
   const topic=document.getElementById('quizTopic').value.trim();
-  if(!topic){document.getElementById('quizStatus').textContent="⚠️ Masukkan topik kuis.";document.getElementById('quizStatus').className="status err";return}
+  if(!topic){
+    document.getElementById('quizStatus').textContent="⚠️ Masukkan topik kuis.";
+    document.getElementById('quizStatus').className="status err";
+    return;
+  }
   
-  const level=getActiveLevel(topic),model=document.getElementById('model').value;
-  const qCount=getQuestionsCount();
-  document.getElementById('quizStatus').textContent=`⏳ AI membuat ${qCount} soal...`;document.getElementById('quizStatus').className="status";
+  lastQuizTopic = topic;
+  const level = getActiveLevel(topic);
+  const currentLevel = getCurrentQuizLevel();
+  const config = getLevelConfig(currentLevel);
+  const qCount = config.questions || 5;
+  
+  document.getElementById('quizStatus').textContent=`⏳ AI membuat ${qCount} soal Level ${currentLevel} (${config.name})...`;
+  document.getElementById('quizStatus').className="status";
   document.getElementById('quizContainer').innerHTML='<div class="loading" style="justify-content:center;padding:20px"><span>🤖</span><span>Membuat soal</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
   
   try{
     const resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{
       method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body:JSON.stringify({model,messages:[{role:"system",content:`Kamu adalah pembuat soal untuk pelajar tingkat ${level}. ${getLevelDescription(level)}. Buat ${qCount} soal pilihan ganda dengan 4 pilihan (A,B,C,D). Format JSON: { "questions": [ { "question": "teks", "options": ["A","B","C","D"], "correct": 0 } ] }`},{role:"user",content:`Buatkan ${qCount} soal pilihan ganda tentang: ${topic}`}],temperature:.7,max_completion_tokens:2000})
+      body:JSON.stringify({model:document.getElementById('model').value,messages:[{role:"system",content:`Kamu adalah pembuat soal untuk pelajar tingkat ${level}. ${getLevelDescription(level)}. Buat ${qCount} soal pilihan ganda dengan 4 pilihan (A,B,C,D). Format JSON: { "questions": [ { "question": "teks", "options": ["A","B","C","D"], "correct": 0 } ] }`},{role:"user",content:`Buatkan ${qCount} soal pilihan ganda tentang: ${topic}`}],temperature:.7,max_completion_tokens:2500})
     });
     const data=await resp.json();
     if(!resp.ok)throw new Error(data?.error?.message||"HTTP "+resp.status);
@@ -2462,7 +2801,13 @@ async function generateQuiz(){
     if(!parsed.questions||parsed.questions.length<qCount)throw new Error(`Kurang dari ${qCount} soal.`);
     quizData=parsed.questions;quizAnswered=false;wrongAnswersList=[];
     renderQuiz(quizData);
-    document.getElementById('quizStatus').textContent=`✅ ${quizData.length} soal berhasil dibuat`;document.getElementById('quizStatus').className="status ok";
+    
+    if (quizData) {
+      startQuizTimer(120 + (currentLevel * 5));
+    }
+    
+    document.getElementById('quizStatus').textContent=`✅ ${quizData.length} soal berhasil dibuat (Level ${currentLevel})`;
+    document.getElementById('quizStatus').className="status ok";
     updateDailyChallenge();
   }catch(err){
     document.getElementById('quizContainer').innerHTML=`<div class="lesson-box" style="text-align:center;padding:20px;border-color:#ff6b7a"><p style="color:#ff6b7a">❌ ${escapeHtml(err.message)}</p><button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="generateQuiz()">🔄 Coba Lagi</button></div>`;
@@ -2472,7 +2817,9 @@ async function generateQuiz(){
 
 function renderQuiz(qs){
   const c=$('quizContainer');
-  let html=`<div class="card-title" style="margin-top:0">📝 Jawab soal-soal berikut</div>`;
+  const currentLevel = getCurrentQuizLevel();
+  const config = getLevelConfig(currentLevel);
+  let html=`<div class="card-title" style="margin-top:0">📝 Level ${currentLevel}: ${config.name} (${qs.length} soal)</div>`;
   qs.forEach((q,i)=>{
     html+=`<div class="quiz-question" id="q${i}"><div class="q-number">Soal ${i+1} dari ${qs.length}</div><div class="q-text">${escapeHtml(q.question)}</div><div class="quiz-options" id="options${i}">`;
     const labels=['A','B','C','D'];
@@ -2483,8 +2830,16 @@ function renderQuiz(qs){
   c.innerHTML=html;
 }
 
-function selectAnswer(qi,oi){
-  if(quizAnswered)return;
+function selectAnswer(qi, oi){
+  if(quizAnswered) {
+    const status = document.getElementById('quizStatus');
+    if(status) {
+      status.textContent = "⏳ Kuis sudah dinilai. Klik 'Kuis Baru' untuk mengulang.";
+      status.className = "status";
+    }
+    return;
+  }
+  
   const labels=document.querySelectorAll(`#options${qi} label`);
   labels.forEach((l,idx)=>{
     const r=l.querySelector('input[type="radio"]');
@@ -2494,6 +2849,11 @@ function selectAnswer(qi,oi){
 
 function submitQuiz(){
   if(!quizData||quizAnswered)return;
+  
+  if (quizTimer) {
+    clearInterval(quizTimer);
+    quizTimer = null;
+  }
   
   const qs=quizData;let correct=0,total=qs.length,allAnswered=true;
   const wrongQuestions=[];
@@ -2513,11 +2873,8 @@ function submitQuiz(){
     });
   });
   if(!allAnswered){
-    const quizStatus = document.getElementById('quizStatus');
-    if(quizStatus) {
-      quizStatus.textContent="⚠️ Jawab semua soal!";
-      quizStatus.className="status err";
-    }
+    document.getElementById('quizStatus').textContent="⚠️ Jawab semua soal!";
+    document.getElementById('quizStatus').className="status err";
     return;
   }
   quizAnswered=true;
@@ -2525,6 +2882,36 @@ function submitQuiz(){
   wrongAnswersList=wrongQuestions;
   saveWrongAnswers(wrongQuestions);
   saveQuizHistory(document.getElementById('quizTopic').value.trim(),score,total);
+  
+  const oldLevel = getCurrentQuizLevel();
+  const pointsEarned = score >= 70 ? 20 : (score >= 50 ? 10 : 5);
+  updatePoints(pointsEarned);
+  const newLevel = getCurrentQuizLevel();
+  
+  if (newLevel > oldLevel) {
+    const newConfig = getLevelConfig(newLevel);
+    showNotification('🎉 LEVEL UP!', `Selamat! Kamu naik ke Level ${newLevel}: ${newConfig.badge} ${newConfig.name}!`);
+    speakText(`Selamat! Kamu naik ke level ${newLevel} ${newConfig.name}`);
+    updatePoints(50 + (newLevel * 5));
+    
+    const container = document.getElementById('quizContainer');
+    if (container) {
+      container.innerHTML += `
+        <div style="text-align:center;padding:20px;background:rgba(255,215,0,0.1);border-radius:var(--radius-md);border:2px solid #fbbf24;margin-top:10px">
+          <span style="font-size:48px">${newConfig.badge}</span>
+          <h3 style="color:#fbbf24;margin:4px 0">🎉 LEVEL UP! Level ${newLevel}</h3>
+          <p style="color:var(--text-secondary)">Kamu sekarang ${newConfig.badge} ${newConfig.name}!</p>
+          <p style="font-size:12px;color:var(--text-muted)">+${50 + (newLevel * 5)} bonus poin!</p>
+        </div>
+      `;
+    }
+  }
+  
+  updateQuizLevelUI();
+  
+  const userName = document.getElementById('certName').value.trim() || 'Pengguna';
+  updateLeaderboard(userName, userPoints + score);
+  
   const c=$('quizContainer');
   if(!c) return;
   let stars=score===100?'⭐⭐⭐⭐⭐':score>=80?'⭐⭐⭐⭐':score>=60?'⭐⭐⭐':score>=40?'⭐⭐':'⭐';
@@ -2534,41 +2921,82 @@ function submitQuiz(){
   }
   const quizStatus = document.getElementById('quizStatus');
   if(quizStatus) {
-    quizStatus.textContent=`✅ Selesai! Nilai: ${score}%`;
+    quizStatus.textContent=`✅ Selesai! Nilai: ${score}% (Level ${getCurrentQuizLevel()})`;
     quizStatus.className="status ok";
   }
-  updatePoints(score>=80?20:10);
+  
   updateStreak();
   checkAchievements();
   updateGameStats('quiz', score);
 }
 
 function showAnswerKeys(){
-  if(!quizData)return;
-  let html='<div class="lesson-box" style="margin-top:10px"><strong>🔑 Kunci Jawaban:</strong><br>';
-  quizData.forEach((q,i)=>{
-    const labels=['A','B','C','D'];
-    html+=`<div style="margin-top:4px;font-size:12px"><strong>${i+1}.</strong> ${escapeHtml(q.question)}<br><span style="color:#35d38a">✓ Jawaban: ${labels[q.correct]}. ${escapeHtml(q.options[q.correct])}</span></div>`;
-  });
-  html+='</div>';
-  const c=$('quizContainer');
-  if(!c) return;
-  const old=c.querySelector('.lesson-box:last-child');
-  if(old && old.textContent.includes('Kunci Jawaban')) old.remove();
-  const quizResult = c.querySelector('.quiz-result');
-  if(quizResult) {
-    quizResult.insertAdjacentHTML('afterend',html);
+  if(!quizData) return;
+  
+  let container = document.getElementById('answerKeysContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'answerKeysContainer';
+    container.className = 'lesson-box';
+    container.style.marginTop = '10px';
+    document.getElementById('quizContainer').appendChild(container);
   }
+  
+  const labels = ['A','B','C','D'];
+  let html = '<strong>🔑 Kunci Jawaban:</strong><br>';
+  quizData.forEach((q, i) => {
+    html += `<div style="margin-top:6px;font-size:12px;padding:6px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm)">
+      <strong>${i+1}.</strong> ${escapeHtml(q.question)}<br>
+      <span style="color:#35d38a">✓ Jawaban: ${labels[q.correct]}. ${escapeHtml(q.options[q.correct])}</span>
+    </div>`;
+  });
+  container.innerHTML = html;
 }
 
 function resetQuiz(){
-  quizData=null;
-  quizAnswered=false;
-  wrongAnswersList=[];
-  document.getElementById('quizContainer').innerHTML=`<div class="lesson-box" style="text-align:center;padding:20px"><p style="font-size:13px;margin:0">Masukkan topik dan klik <strong>🎯 Buat Kuis</strong> untuk memulai.</p></div>`;
-  document.getElementById('quizStatus').textContent="";
-  document.getElementById('quizStatus').className="status";
+  quizData = null;
+  quizAnswered = false;
+  wrongAnswersList = [];
+  
+  const keyContainer = document.getElementById('answerKeysContainer');
+  if (keyContainer) keyContainer.remove();
+  
+  if (quizTimer) {
+    clearInterval(quizTimer);
+    quizTimer = null;
+  }
+  const timerDisplay = document.getElementById('quizTimer');
+  if (timerDisplay) timerDisplay.remove();
+  
+  const status = document.getElementById('quizStatus');
+  if(status) {
+    status.textContent = "";
+    status.className = "status";
+  }
+  
+  setQuizDifficulty(quizDifficulty);
+  
+  if (lastQuizTopic) {
+    document.getElementById('quizTopic').value = lastQuizTopic;
+  }
+  
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = `
+    <div class="lesson-box" style="text-align:center;padding:20px">
+      <p style="font-size:13px;margin:0">Masukkan topik dan klik <strong>🎯 Buat Kuis</strong> untuk memulai.</p>
+    </div>
+  `;
+  
   document.getElementById('quizTopic').focus();
+  updateQuizLevelUI();
+}
+
+function clearQuizHistory(){
+  if (!confirm("Hapus semua riwayat kuis?")) return;
+  localStorage.removeItem(QUIZ_HISTORY_STORE);
+  renderProgressChart();
+  document.getElementById('quizStatus').textContent = "🗑️ Riwayat kuis dihapus";
+  document.getElementById('quizStatus').className = "status ok";
 }
 
 // ============================================================
@@ -2577,7 +3005,8 @@ function resetQuiz(){
 function getQuizHistory(){try{return JSON.parse(localStorage.getItem(QUIZ_HISTORY_STORE))||[]}catch(e){return[]}}
 function saveQuizHistory(topic,score,total){
   const h=getQuizHistory();
-  h.push({topic,score,total,date:new Date().toISOString()});
+  const currentLevel = getCurrentQuizLevel();
+  h.push({topic,score,total,level:currentLevel,date:new Date().toISOString()});
   localStorage.setItem(QUIZ_HISTORY_STORE,JSON.stringify(h));
 }
 
@@ -2635,8 +3064,11 @@ function renderProgressChart(){
 function updateAdaptiveRecommendations(){
   const container=document.getElementById('adaptiveRecommendations');
   const history=getQuizHistory();
+  const currentLevel = getCurrentQuizLevel();
+  const config = getLevelConfig(currentLevel);
+  
   if(history.length<3){
-    container.innerHTML='<div style="color:var(--text-secondary);font-size:12px">📊 Kerjakan minimal 3 kuis untuk mendapatkan rekomendasi personal</div>';
+    container.innerHTML=`<div style="color:var(--text-secondary);font-size:12px">📊 Level ${currentLevel}: ${config.badge} ${config.name} • Kerjakan minimal 3 kuis untuk rekomendasi</div>`;
     return;
   }
   const topics={};
@@ -2647,9 +3079,9 @@ function updateAdaptiveRecommendations(){
   });
   const weakTopics=Object.keys(topics).filter(t=>topics[t].total/topics[t].count<60);
   if(weakTopics.length===0){
-    container.innerHTML='<div style="color:#35d38a;font-size:12px">🎉 Hebat! Kamu menguasai semua topik dengan baik. Coba topik baru!</div>';
+    container.innerHTML=`<div style="color:#35d38a;font-size:12px">🎉 Hebat! Level ${currentLevel}: ${config.badge} ${config.name} • Kamu menguasai semua topik!</div>`;
   }else{
-    container.innerHTML=`<div style="font-size:12px">🎯 Fokus belajar topik ini:</div>${weakTopics.map(t=>`<div style="padding:6px 12px;background:rgba(255,107,122,0.06);border-radius:var(--radius-sm);margin:4px 0;border-left:3px solid #ff6b7a;font-size:12px">📚 ${t} — perlu ditingkatkan (${Math.round(topics[t].total/topics[t].count)}%)</div>`).join('')}`;
+    container.innerHTML=`<div style="font-size:12px">🎯 Level ${currentLevel}: ${config.badge} ${config.name} • Fokus belajar:</div>${weakTopics.map(t=>`<div style="padding:6px 12px;background:rgba(255,107,122,0.06);border-radius:var(--radius-sm);margin:4px 0;border-left:3px solid #ff6b7a;font-size:12px">📚 ${t} — perlu ditingkatkan (${Math.round(topics[t].total/topics[t].count)}%)</div>`).join('')}`;
   }
 }
 
@@ -2672,22 +3104,29 @@ function updateStreak(){
   document.getElementById('streakCount').textContent=streak.count;
 }
 
+// ============================================================
+// ============ DAILY CHALLENGE ============
+// ============================================================
 function updateDailyChallenge(){
-  const today=new Date().toDateString();
-  const progress=JSON.parse(localStorage.getItem('dailyChallenge'))||{date:'',count:0};
-  if(progress.date!==today){progress.date=today;progress.count=0}
-  progress.count++;
-  localStorage.setItem('dailyChallenge',JSON.stringify(progress));
+  const today = new Date().toDateString();
+  let progress = JSON.parse(localStorage.getItem('dailyChallenge')) || { date: '', count: 0 };
+  
+  if (progress.date !== today) {
+    progress = { date: today, count: 0 };
+  }
+  
+  progress.count = Math.min(progress.count + 1, 1);
+  localStorage.setItem('dailyChallenge', JSON.stringify(progress));
   
   const dailyProgress = document.getElementById('dailyProgress');
-  if(dailyProgress) {
-    dailyProgress.textContent=progress.count+'/1';
+  if (dailyProgress) {
+    dailyProgress.textContent = progress.count + '/1';
   }
   
   const dailyChallenge = document.getElementById('dailyChallenge');
-  if(dailyChallenge && progress.count>=1){
-    dailyChallenge.style.borderColor='rgba(53,211,138,.2)';
-    dailyChallenge.style.background='rgba(53,211,138,.04)';
+  if (dailyChallenge && progress.count >= 1) {
+    dailyChallenge.style.borderColor = 'rgba(53,211,138,.2)';
+    dailyChallenge.style.background = 'rgba(53,211,138,.04)';
   }
 }
 
@@ -2697,10 +3136,15 @@ function updateDailyChallenge(){
 function getLeaderboard(){try{return JSON.parse(localStorage.getItem(LEADERBOARD_STORE))||[]}catch(e){return[]}}
 function saveLeaderboard(lb){localStorage.setItem(LEADERBOARD_STORE,JSON.stringify(lb))}
 
-function updateLeaderboard(name,score){
-  const lb=getLeaderboard();
-  const existing=lb.find(u=>u.name===name);
-  if(existing){if(score>existing.score)existing.score=score}else{lb.push({name,score})}
+function updateLeaderboard(name, score){
+  const userName = name || document.getElementById('certName').value.trim() || 'Pengguna';
+  const lb = getLeaderboard();
+  const existing = lb.find(u => u.name === userName);
+  if(existing){
+    if(score > existing.score) existing.score = score;
+  } else {
+    lb.push({ name: userName, score });
+  }
   lb.sort((a,b)=>b.score-a.score);
   saveLeaderboard(lb.slice(0,10));
 }
@@ -3094,15 +3538,17 @@ function generateCertificate(){
   const name=document.getElementById('certName').value.trim()||'Nama Anda';
   const history=getQuizHistory();
   const avg=history.length>0?Math.round(history.reduce((a,b)=>a+b.score,0)/history.length):100;
+  const currentLevel = getCurrentQuizLevel();
+  const config = getLevelConfig(currentLevel);
   const certDiv=document.getElementById('certificatePreview');
   certDiv.classList.remove('hidden');
   certDiv.innerHTML=`
     <div class="cert-title">🎓 SERTIFIKAT KELULUSAN</div>
     <div class="cert-name">${escapeHtml(name)}</div>
-    <div class="cert-detail">Telah menyelesaikan ${history.length} kuis dengan rata-rata nilai ${avg}%</div>
+    <div class="cert-detail">Level ${currentLevel}: ${config.badge} ${config.name} • ${history.length} kuis • Rata-rata ${avg}%</div>
     <button class="btn btn-sm btn-success" onclick="downloadCertificate()" style="margin-top:8px">⬇️ Download PDF</button>
   `;
-  certificateData={name,avg,count:history.length};
+  certificateData={name,avg,count:history.length,level:currentLevel,levelName:config.name};
   updateLeaderboard(name,userPoints);
 }
 
@@ -3110,6 +3556,7 @@ function downloadCertificate(){
   if(!certificateData)return;
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF('landscape','mm','a4');
+  doc.setFont('helvetica');
   doc.setFillColor(15,15,30);doc.rect(0,0,297,210,'F');
   doc.setDrawColor(109,124,255);doc.setLineWidth(2);doc.rect(10,10,277,190);
   doc.setTextColor(255,215,0);doc.setFontSize(40);doc.text('🎓 SERTIFIKAT KELULUSAN',148.5,55,{align:'center'});
@@ -3118,9 +3565,11 @@ function downloadCertificate(){
   doc.setTextColor(200,200,200);doc.setFontSize(18);doc.text('Diberikan kepada:',148.5,95,{align:'center'});
   doc.setFontSize(30);doc.setTextColor(109,124,255);doc.text(certificateData.name,148.5,125,{align:'center'});
   doc.setTextColor(200,200,200);doc.setFontSize(16);
-  doc.text(`Telah menyelesaikan ${certificateData.count} kuis dengan rata-rata nilai ${certificateData.avg}%`,148.5,155,{align:'center'});
+  doc.text(`Level ${certificateData.level}: ${certificateData.levelName}`,148.5,150,{align:'center'});
+  doc.setFontSize(14);
+  doc.text(`Telah menyelesaikan ${certificateData.count} kuis dengan rata-rata nilai ${certificateData.avg}%`,148.5,170,{align:'center'});
   doc.setFontSize(12);doc.setTextColor(150,150,150);
-  doc.text(new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}),148.5,180,{align:'center'});
+  doc.text(new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}),148.5,190,{align:'center'});
   doc.save('sertifikat_studyai.pdf');
 }
 
@@ -3132,16 +3581,22 @@ function saveNotes(n){localStorage.setItem(NOTES_STORE,JSON.stringify(n))}
 
 function saveNote(){
   const t=$('noteTitle').value.trim(),c=$('noteContent').value.trim();
-  if(!t||!c){$('chatStatus').textContent="⚠️ Isi judul dan isi catatan.";$('chatStatus').className="status err";return}
+  if(!t || t.length < 2 || !c || c.length < 3){
+    document.getElementById('chatStatus').textContent="⚠️ Judul minimal 2 karakter, isi minimal 3 karakter.";
+    document.getElementById('chatStatus').className="status err";
+    return;
+  }
   const n=loadNotes();n.unshift({id:Date.now(),title:t,content:c,date:new Date().toLocaleDateString('id-ID')});saveNotes(n);
   $('noteTitle').value='';$('noteContent').value='';renderNotes();
-  $('chatStatus').textContent="✅ Catatan berhasil disimpan!";$('chatStatus').className="status ok";updatePoints(5);
+  document.getElementById('chatStatus').textContent="✅ Catatan berhasil disimpan!";
+  document.getElementById('chatStatus').className="status ok";
+  updatePoints(5);
 }
 
 function deleteNote(id){if(!confirm("Hapus catatan ini?"))return;let n=loadNotes();n=n.filter(x=>x.id!==id);saveNotes(n);renderNotes()}
 
 function exportNotes(){
-  const n=loadNotes();if(!n.length){$('chatStatus').textContent="⚠️ Belum ada catatan.";$('chatStatus').className="status err";return}
+  const n=loadNotes();if(!n.length){document.getElementById('chatStatus').textContent="⚠️ Belum ada catatan.";document.getElementById('chatStatus').className="status err";return}
   let txt='=== STUDYAI - CATATAN BELAJAR ===\n\n';
   n.forEach((x,i)=>{txt+=`📝 ${i+1}. ${x.title}\n📅 ${x.date}\n${x.content}\n\n---\n\n`});
   const blob=new Blob([txt],{type:'text/plain'});
@@ -3149,9 +3604,10 @@ function exportNotes(){
 }
 
 function exportNotesPDF(){
-  const n=loadNotes();if(!n.length){$('chatStatus').textContent="⚠️ Belum ada catatan.";$('chatStatus').className="status err";return}
+  const n=loadNotes();if(!n.length){document.getElementById('chatStatus').textContent="⚠️ Belum ada catatan.";document.getElementById('chatStatus').className="status err";return}
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF('p','mm','a4');
+  doc.setFont('helvetica');
   doc.setFontSize(18);doc.setTextColor(109,124,255);doc.text('StudyAI - Catatan Belajar',20,20);
   let y=30;
   n.slice(0,5).forEach((x,i)=>{
@@ -3188,7 +3644,24 @@ function updateProgressUI(){
   if(progressData.topics.length){c.innerHTML=progressData.topics.map(t=>`<span style="background:rgba(255,255,255,0.03);padding:3px 10px;border-radius:var(--radius-sm);font-size:10px;border:1px solid rgba(255,255,255,0.04)">${escapeHtml(t)}</span>`).join('')}
   else{c.innerHTML='<span style="color:var(--text-muted);font-size:11px">Belum ada topik yang dipelajari</span>'}
 }
-function resetProgress(){if(!confirm("Reset semua progress?"))return;progressData={questions:0,topics:[],level:'SMP',studyTime:0};localStorage.setItem(PROGRESS_STORE,JSON.stringify(progressData));updateProgressUI();$('chatStatus').textContent="✅ Progress direset";$('chatStatus').className="status ok"}
+
+function resetProgress(){
+  if(!confirm("Reset semua progress termasuk poin dan streak?")) return;
+  progressData = { questions: 0, topics: [], level: 'SMP', studyTime: 0 };
+  localStorage.setItem(PROGRESS_STORE, JSON.stringify(progressData));
+  
+  userPoints = 0;
+  localStorage.setItem(POINTS_STORE, userPoints);
+  localStorage.removeItem(STREAK_STORE);
+  
+  updateProgressUI();
+  updateLevelLabel();
+  updateQuizLevelUI();
+  document.getElementById('streakCount').textContent = '0';
+  document.getElementById('pointsValue').textContent = '0';
+  document.getElementById('chatStatus').textContent = "✅ Semua progress direset";
+  document.getElementById('chatStatus').className = "status ok";
+}
 
 // ============================================================
 // ============ PLAN ============
@@ -3197,10 +3670,16 @@ function loadPlan(){try{return JSON.parse(localStorage.getItem(PLAN_STORE))||[]}
 function savePlan(p){localStorage.setItem(PLAN_STORE,JSON.stringify(p))}
 
 function addPlan(){
-  const i=$('planInput'),t=i.value.trim();
-  if(!t){$('chatStatus').textContent="⚠️ Masukkan target belajar.";$('chatStatus').className="status err";return}
-  const p=loadPlan();p.push({id:Date.now(),text:t,done:false});savePlan(p);i.value='';renderPlan();
-  $('chatStatus').textContent="✅ Target berhasil ditambahkan!";$('chatStatus').className="status ok";updatePoints(3);
+  const input=document.getElementById('planInput'),text=input.value.trim();
+  if(!text || text.length < 2){
+    document.getElementById('chatStatus').textContent="⚠️ Target belajar minimal 2 karakter.";
+    document.getElementById('chatStatus').className="status err";
+    return;
+  }
+  const p=loadPlan();p.push({id:Date.now(),text:text,done:false});savePlan(p);input.value='';renderPlan();
+  document.getElementById('chatStatus').textContent="✅ Target berhasil ditambahkan!";
+  document.getElementById('chatStatus').className="status ok";
+  updatePoints(3);
 }
 function togglePlan(id){const p=loadPlan();const item=p.find(x=>x.id===id);if(item){item.done=!item.done;savePlan(p);renderPlan();if(item.done)updatePoints(5)}}
 function deletePlan(id){let p=loadPlan();p=p.filter(x=>x.id!==id);savePlan(p);renderPlan()}
@@ -3224,13 +3703,14 @@ function renderAchievements(){
     {id:'twenty_questions',name:'Pelajar Tekun',icon:'🎯'},
     {id:'fifty_questions',name:'Cendekia',icon:'🧠'},
     {id:'hundred_questions',name:'Jenius',icon:'💡'},
-    {id:'sd_master',name:'Master SD',icon:'🟢'},
-    {id:'smp_master',name:'Master SMP',icon:'🔵'},
-    {id:'sma_master',name:'Master SMA',icon:'🟡'},
+    {id:'level_10',name:'Level 10',icon:'⭐'},
+    {id:'level_25',name:'Level 25',icon:'🏅'},
+    {id:'level_50',name:'Level 50',icon:'👑'},
+    {id:'level_75',name:'Level 75',icon:'💎'},
+    {id:'level_100',name:'Legenda',icon:'🌟'},
     {id:'quiz_perfect',name:'Sempurna!',icon:'💯'},
     {id:'streak_7',name:'Konsisten',icon:'🔥'},
     {id:'streak_30',name:'Komitmen',icon:'💪'},
-    {id:'top_leaderboard',name:'Juara',icon:'🏆'},
     {id:'game_master',name:'Game Master',icon:'🎮'},
     {id:'quiz_warrior',name:'Quiz Warrior',icon:'⚔️'}
   ];
@@ -3241,19 +3721,21 @@ function renderAchievements(){
 
 function checkAchievements(){
   const stats=getGameStats();
+  const currentLevel = getCurrentQuizLevel();
   const ach=[
     {id:'first_question',cond:()=>userPoints>=10},
     {id:'five_questions',cond:()=>userPoints>=50},
     {id:'twenty_questions',cond:()=>userPoints>=200},
     {id:'fifty_questions',cond:()=>userPoints>=500},
     {id:'hundred_questions',cond:()=>userPoints>=1000},
-    {id:'sd_master',cond:()=>$('statLevel')?.textContent==='SD'&&userPoints>=50},
-    {id:'smp_master',cond:()=>$('statLevel')?.textContent==='SMP'&&userPoints>=100},
-    {id:'sma_master',cond:()=>$('statLevel')?.textContent==='SMA'&&userPoints>=200},
+    {id:'level_10',cond:()=>currentLevel>=10},
+    {id:'level_25',cond:()=>currentLevel>=25},
+    {id:'level_50',cond:()=>currentLevel>=50},
+    {id:'level_75',cond:()=>currentLevel>=75},
+    {id:'level_100',cond:()=>currentLevel>=100},
     {id:'quiz_perfect',cond:()=>getQuizHistory().some(h=>h.score===100)},
     {id:'streak_7',cond:()=>getStreak().count>=7},
     {id:'streak_30',cond:()=>getStreak().count>=30},
-    {id:'top_leaderboard',cond:()=>{const lb=getLeaderboard();return lb.length>0&&lb[0].name===('Anda')||false}},
     {id:'game_master',cond:()=>stats.flashcard>=1&&stats.matching>=1&&stats.memory>=1&&stats.trivia>=1},
     {id:'quiz_warrior',cond:()=>getQuizHistory().length>=20}
   ];
@@ -3269,10 +3751,16 @@ function saveReminders(r){localStorage.setItem(REMINDER_STORE,JSON.stringify(r))
 
 function addReminder(){
   const t=$('reminderInput').value.trim(),tm=$('reminderTime').value;
-  if(!t||!tm){$('chatStatus').textContent="⚠️ Isi pengingat dan waktu.";$('chatStatus').className="status err";return}
+  if(!t || t.length < 2 || !tm){
+    document.getElementById('chatStatus').textContent="⚠️ Isi pengingat (minimal 2 karakter) dan waktu.";
+    document.getElementById('chatStatus').className="status err";
+    return;
+  }
   const r=loadReminders();r.push({id:Date.now(),text:t,time:tm,active:true});saveReminders(r);
   $('reminderInput').value='';$('reminderTime').value='';renderReminders();
-  $('chatStatus').textContent="✅ Pengingat disetel!";$('chatStatus').className="status ok";startReminderChecker();
+  document.getElementById('chatStatus').textContent="✅ Pengingat disetel!";
+  document.getElementById('chatStatus').className="status ok";
+  startReminderChecker();
 }
 function deleteReminder(id){let r=loadReminders();r=r.filter(x=>x.id!==id);saveReminders(r);renderReminders()}
 function renderReminders(){
@@ -3296,11 +3784,11 @@ function startReminderChecker(){
 // ============================================================
 let userPoints=parseInt(localStorage.getItem(POINTS_STORE))||0;
 
-function updatePoints(p){userPoints+=p;localStorage.setItem(POINTS_STORE,userPoints);$('pointsValue').textContent=userPoints;updateLevelLabel();checkAchievements()}
+function updatePoints(p){userPoints+=p;localStorage.setItem(POINTS_STORE,userPoints);$('pointsValue').textContent=userPoints;updateLevelLabel();updateQuizLevelUI();checkAchievements()}
 function updateLevelLabel(){
-  const levels=['Pemula','Pelajar','Mahir','Cendekia','Jenius'];
-  const li=Math.min(Math.floor(userPoints/100),levels.length-1);
-  $('userLevelLabel').textContent=levels[li];
+  const currentLevel = getCurrentQuizLevel();
+  const config = getLevelConfig(currentLevel);
+  $('userLevelLabel').textContent = `${config.badge} ${config.name} (Lv.${currentLevel})`;
   $('badgeCount').textContent=userBadges.length+' Badge';
 }
 
@@ -3330,6 +3818,9 @@ if(window.speechSynthesis){
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.getVoices()};
 }
+
+loadQuizLevel();
+updateQuizLevelUI();
 
 hideResultChat();
 setWelcomeMessage('chatContainer','👋 Halo! Siap membantu belajar!','Aku adalah tutor AI pribadimu. Tanyakan apa saja tentang pelajaran!');
