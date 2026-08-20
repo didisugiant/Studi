@@ -901,6 +901,7 @@ select option { background: #1a1a2e; }
 }
 .status.ok { color: #35d38a; }
 .status.err { color: #ff6b7a; }
+.status.warning { color: #f59e0b; }
 .hidden { display: none !important; }
 
 /* ===== VOICE ===== */
@@ -1528,6 +1529,42 @@ select option { background: #1a1a2e; }
   .chat-input-area input { font-size: 12px; padding: 6px 10px; }
   .chat-input-area button { font-size: 11px; padding: 6px 12px; }
   .memory-grid { grid-template-columns: repeat(3, 1fr); }
+  .chat-container { max-height: 40vh; min-height: 120px; }
+}
+
+/* ===== CHAT RESPONSIVE FIX ===== */
+.chat-input-area {
+  flex-wrap: wrap;
+}
+.chat-input-area input {
+  min-width: 120px;
+}
+.chat-input-area button {
+  min-width: 60px;
+}
+.chat-bubble {
+  max-width: 90%;
+}
+@media (max-width: 480px) {
+  .chat-bubble {
+    max-width: 95%;
+  }
+  .chat-text {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+  .chat-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  .chat-meta {
+    font-size: 8px;
+  }
+  .chat-actions .btn {
+    font-size: 8px;
+    padding: 2px 8px;
+  }
 }
 </style>
 </head>
@@ -1679,7 +1716,7 @@ select option { background: #1a1a2e; }
 <section id="tabChat" class="card hidden">
  <div class="card-title">💬 Chat dengan Tutor AI</div>
  <div style="display:flex;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
-  <div style="display:flex;gap:6px">
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
    <button onclick="autoSummary()" class="btn btn-sm btn-primary" style="margin:0">📝 Auto-Summary</button>
    <button onclick="toggleFullscreenChat()" class="btn btn-sm btn-secondary" style="margin:0">⛶ Fullscreen</button>
   </div>
@@ -2009,6 +2046,63 @@ let gameState = {
 };
 
 // ============================================================
+// ============ FALLBACK QUESTIONS ============
+// ============================================================
+function getFallbackQuestions(topic, count) {
+  const lowerTopic = topic.toLowerCase();
+  let questions = [];
+  
+  // Fallback berdasarkan kata kunci
+  const fallbackMap = {
+    'matematika': [
+      {question: 'Berapa hasil 5 + 3?', options: ['6', '7', '8', '9'], correct: 2},
+      {question: 'Apa hasil 10 - 4?', options: ['5', '6', '7', '8'], correct: 1},
+      {question: 'Berapa hasil 6 × 7?', options: ['40', '42', '44', '48'], correct: 1},
+      {question: 'Akar kuadrat dari 64 adalah?', options: ['6', '7', '8', '9'], correct: 2},
+      {question: 'Berapa hasil 15 ÷ 3?', options: ['3', '4', '5', '6'], correct: 2},
+    ],
+    'fisika': [
+      {question: 'Apa satuan gaya dalam SI?', options: ['Meter', 'Newton', 'Kilogram', 'Detik'], correct: 1},
+      {question: 'Apa yang dimaksud dengan kecepatan?', options: ['Perpindahan per waktu', 'Jarak per waktu', 'Percepatan', 'Gaya per massa'], correct: 0},
+      {question: 'Besaran pokok untuk massa adalah?', options: ['Meter', 'Kilogram', 'Detik', 'Ampere'], correct: 1},
+      {question: 'Hukum Newton 1 menyatakan tentang?', options: ['Percepatan', 'Gaya aksi-reaksi', 'Kelembaman', 'Usaha'], correct: 2},
+    ],
+    'biologi': [
+      {question: 'Organel apa yang berfungsi sebagai pusat pengendali sel?', options: ['Mitokondria', 'Nukleus', 'Ribosom', 'Membran sel'], correct: 1},
+      {question: 'Proses fotosintesis terjadi di organel?', options: ['Kloroplas', 'Mitokondria', 'Nukleus', 'Vakuola'], correct: 0},
+      {question: 'Sistem peredaran darah manusia disebut?', options: ['Sistem respirasi', 'Sistem sirkulasi', 'Sistem pencernaan', 'Sistem ekskresi'], correct: 1},
+    ],
+    'kimia': [
+      {question: 'Partikel terkecil penyusun materi adalah?', options: ['Molekul', 'Atom', 'Elektron', 'Proton'], correct: 1},
+      {question: 'Rumus kimia air adalah?', options: ['H2O', 'CO2', 'NaCl', 'CH4'], correct: 0},
+    ],
+    'sejarah': [
+      {question: 'Kapan Indonesia merdeka?', options: ['1945', '1946', '1947', '1948'], correct: 0},
+      {question: 'Siapa proklamator Indonesia?', options: ['Soekarno-Hatta', 'Soeharto', 'Habibie', 'Megawati'], correct: 0},
+    ]
+  };
+  
+  // Cari berdasarkan kata kunci
+  for (const [key, qs] of Object.entries(fallbackMap)) {
+    if (lowerTopic.includes(key) || key.includes(lowerTopic)) {
+      questions = qs;
+      break;
+    }
+  }
+  
+  // Jika tidak ada, berikan soal umum
+  if (questions.length === 0) {
+    questions = [
+      {question: `Apa pengertian dari ${topic}?`, options: ['Pengertian A', 'Pengertian B', 'Pengertian C', 'Pengertian D'], correct: 0},
+      {question: `Sebutkan contoh ${topic}`, options: ['Contoh 1', 'Contoh 2', 'Contoh 3', 'Contoh 4'], correct: 0},
+      {question: `Mengapa ${topic} penting untuk dipelajari?`, options: ['Alasan 1', 'Alasan 2', 'Alasan 3', 'Alasan 4'], correct: 0},
+    ];
+  }
+  
+  return questions.slice(0, Math.min(count, questions.length));
+}
+
+// ============================================================
 // ============ LEVEL FUNCTIONS ============
 // ============================================================
 function getCurrentQuizLevel() {
@@ -2076,7 +2170,6 @@ function updateQuizLevelUI() {
     `;
   }
   
-  // Update daily challenge description with level info
   const desc = document.getElementById('dailyChallengeDesc');
   if (desc) {
     desc.textContent = `Level ${currentLevel}: ${currentConfig.name} • ${currentConfig.questions} soal per kuis`;
@@ -2701,7 +2794,7 @@ function learnTopic(s, t, p){
 }
 
 // ============================================================
-// ============ QUIZ ============
+// ============ QUIZ (PERBAIKAN) ============
 // ============================================================
 function setQuizDifficulty(diff){
   quizDifficulty=diff;
@@ -2724,7 +2817,7 @@ function setQuizDifficulty(diff){
 function getQuestionsCount(){
   const currentLevel = getCurrentQuizLevel();
   const config = getLevelConfig(currentLevel);
-  return config.questions || 5;
+  return Math.min(config.questions || 5, 15);
 }
 
 function startQuizTimer(seconds = 120) {
@@ -2768,7 +2861,182 @@ function startQuizTimer(seconds = 120) {
   }, 1000);
 }
 
+function validateQuizData(data) {
+  if (!data || typeof data !== 'object') return false;
+  if (!data.questions || !Array.isArray(data.questions)) return false;
+  if (data.questions.length === 0) return false;
+  
+  for (const q of data.questions) {
+    if (!q.question || typeof q.question !== 'string') return false;
+    if (!q.options || !Array.isArray(q.options)) return false;
+    if (q.options.length !== 4) return false;
+    if (typeof q.correct !== 'number' || q.correct < 0 || q.correct > 3) return false;
+  }
+  
+  return true;
+}
+
 async function generateQuiz(){
+  const key=getKey();if(!key)return;
+  const topic=document.getElementById('quizTopic').value.trim();
+  if(!topic){
+    document.getElementById('quizStatus').textContent="⚠️ Masukkan topik kuis.";
+    document.getElementById('quizStatus').className="status err";
+    return;
+  }
+  
+  lastQuizTopic = topic;
+  const level = getActiveLevel(topic);
+  const currentLevel = getCurrentQuizLevel();
+  const config = getLevelConfig(currentLevel);
+  const qCount = Math.min(config.questions || 5, 15);
+  
+  document.getElementById('quizStatus').textContent=`⏳ AI membuat ${qCount} soal Level ${currentLevel} (${config.name})...`;
+  document.getElementById('quizStatus').className="status";
+  document.getElementById('quizContainer').innerHTML='<div class="loading" style="justify-content:center;padding:20px"><span>🤖</span><span>Membuat soal</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+  
+  try{
+    const systemPrompt = `Kamu adalah pembuat soal pilihan ganda yang handal untuk pelajar tingkat ${level}. ${getLevelDescription(level)}.
+
+BUATLAH ${qCount} SOAL PILIHAN GANDA DENGAN KETENTUAN:
+1. Setiap soal memiliki 4 pilihan jawaban (A, B, C, D)
+2. Hanya ada 1 jawaban yang benar
+3. Soal harus sesuai dengan topik yang diminta
+4. Jangan membuat soal yang terlalu mudah atau terlalu sulit
+5. Pastikan semua pilihan jawaban masuk akal dan tidak ada duplikat
+
+FORMAT OUTPUT HARUS JSON VALID:
+{
+  "questions": [
+    {
+      "question": "Teks pertanyaan...",
+      "options": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
+      "correct": 0
+    }
+  ]
+}
+
+CATATAN PENTING:
+- "correct" adalah INDEX (0, 1, 2, 3) dari jawaban yang benar
+- Jangan tambahkan teks lain di luar format JSON
+- Pastikan JSON valid dan dapat di-parse`;
+
+    const userPrompt = `Buatkan ${qCount} soal pilihan ganda tentang: ${topic}`;
+    
+    const resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+      body:JSON.stringify({
+        model:document.getElementById('model').value,
+        messages:[
+          {role:"system", content:systemPrompt},
+          {role:"user", content:userPrompt}
+        ],
+        temperature:0.5,
+        max_completion_tokens:3000
+      })
+    });
+    
+    const data=await resp.json();
+    if(!resp.ok)throw new Error(data?.error?.message||"HTTP "+resp.status);
+    
+    const content=data?.choices?.[0]?.message?.content?.trim();
+    if(!content)throw new Error("Tidak ada respons dari AI.");
+    
+    let parsed = null;
+    try {
+      let jsonStr = content;
+      
+      // Jika ada markdown code block
+      const codeBlockMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (codeBlockMatch) {
+        jsonStr = codeBlockMatch[1].trim();
+      }
+      
+      // Cari JSON object
+      const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[0];
+      }
+      
+      parsed = JSON.parse(jsonStr);
+    } catch(e) {
+      console.error("Parse error:", e);
+      console.log("Content:", content);
+      throw new Error("Format JSON tidak valid. Menggunakan soal cadangan.");
+    }
+    
+    if(!parsed.questions || parsed.questions.length === 0) {
+      throw new Error("Tidak ada soal yang dihasilkan.");
+    }
+    
+    // Validasi setiap soal
+    const validQuestions = parsed.questions.filter((q, idx) => {
+      if (!q.question || !q.options || !Array.isArray(q.options)) {
+        console.warn(`Soal ${idx} tidak valid:`, q);
+        return false;
+      }
+      if (q.options.length !== 4) {
+        console.warn(`Soal ${idx} tidak memiliki 4 pilihan:`, q.options);
+        return false;
+      }
+      if (typeof q.correct !== 'number' || q.correct < 0 || q.correct > 3) {
+        console.warn(`Soal ${idx} memiliki correct tidak valid:`, q.correct);
+        return false;
+      }
+      return true;
+    });
+    
+    if (validQuestions.length === 0) {
+      throw new Error("Tidak ada soal yang valid.");
+    }
+    
+    quizData = validQuestions.slice(0, qCount);
+    quizAnswered = false;
+    wrongAnswersList = [];
+    
+    renderQuiz(quizData);
+    
+    if (quizData) {
+      startQuizTimer(120 + (currentLevel * 5));
+    }
+    
+    document.getElementById('quizStatus').textContent=`✅ ${quizData.length} soal berhasil dibuat (Level ${currentLevel})`;
+    document.getElementById('quizStatus').className="status ok";
+    updateDailyChallenge();
+    
+  } catch(err) {
+    console.error("Error generating quiz:", err);
+    
+    // PERBAIKAN: Gunakan fallback questions
+    const fallbackQuestions = getFallbackQuestions(topic, qCount);
+    if (fallbackQuestions.length > 0) {
+      quizData = fallbackQuestions;
+      quizAnswered = false;
+      wrongAnswersList = [];
+      renderQuiz(quizData);
+      
+      document.getElementById('quizStatus').textContent=`⚠️ Menggunakan soal cadangan (${quizData.length} soal)`;
+      document.getElementById('quizStatus').className="status warning";
+      if (quizData) {
+        startQuizTimer(120 + (currentLevel * 5));
+      }
+      updateDailyChallenge();
+      return;
+    }
+    
+    document.getElementById('quizContainer').innerHTML=`
+      <div class="lesson-box" style="text-align:center;padding:20px;border-color:#ff6b7a">
+        <p style="color:#ff6b7a">❌ ${escapeHtml(err.message)}</p>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:8px">Coba gunakan topik yang lebih spesifik atau periksa koneksi internet.</p>
+        <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="generateQuiz()">🔄 Coba Lagi</button>
+      </div>
+    `;
+    document.getElementById('quizStatus').textContent="❌ "+err.message;
+    document.getElementById('quizStatus').className="status err";
+  }
+}
+
 function renderQuiz(qs){
   const c=$('quizContainer');
   const currentLevel = getCurrentQuizLevel();
@@ -2809,27 +3077,18 @@ function submitQuiz(){
     quizTimer = null;
   }
   
-  const qs=quizData;
-  let correct=0;
-  let total=qs.length;
-  let allAnswered=true;
+  const qs=quizData;let correct=0,total=qs.length,allAnswered=true;
   const wrongQuestions=[];
-  
   qs.forEach((q,i)=>{
     const sel=document.querySelector(`input[name="q${i}"]:checked`);
-    if(!sel){
-      allAnswered=false;
-      return;
-    }
+    if(!sel){allAnswered=false;return}
     
-    // PERBAIKAN: Validasi value
-    const val = parseInt(sel.value);
+    const val=parseInt(sel.value);
     if (isNaN(val) || val < 0 || val > 3) {
       allAnswered = false;
       return;
     }
     
-    // PERBAIKAN: Pastikan q.correct valid
     const correctIndex = typeof q.correct === 'number' ? q.correct : 0;
     const isCorrect = (val === correctIndex);
     
@@ -2844,7 +3103,6 @@ function submitQuiz(){
       });
     }
     
-    // Tampilkan feedback
     const labels=document.querySelectorAll(`#options${i} label`);
     labels.forEach((l,idx)=>{
       l.classList.add('disabled');
@@ -2869,7 +3127,6 @@ function submitQuiz(){
   wrongAnswersList=wrongQuestions;
   saveWrongAnswers(wrongQuestions);
   saveQuizHistory(document.getElementById('quizTopic').value.trim(),score,total);
-}
   
   const oldLevel = getCurrentQuizLevel();
   const pointsEarned = score >= 70 ? 20 : (score >= 50 ? 10 : 5);
@@ -2933,9 +3190,10 @@ function showAnswerKeys(){
   const labels = ['A','B','C','D'];
   let html = '<strong>🔑 Kunci Jawaban:</strong><br>';
   quizData.forEach((q, i) => {
+    const correctIndex = typeof q.correct === 'number' ? q.correct : 0;
     html += `<div style="margin-top:6px;font-size:12px;padding:6px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm)">
       <strong>${i+1}.</strong> ${escapeHtml(q.question)}<br>
-      <span style="color:#35d38a">✓ Jawaban: ${labels[q.correct]}. ${escapeHtml(q.options[q.correct])}</span>
+      <span style="color:#35d38a">✓ Jawaban: ${labels[correctIndex]}. ${escapeHtml(q.options[correctIndex] || '')}</span>
     </div>`;
   });
   container.innerHTML = html;
